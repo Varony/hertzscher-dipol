@@ -152,7 +152,8 @@ addView('field', '2 · Felder & Abstrahlung', V => {
   const st = {
     f: F0, slow: .85, cut: 'vertical', showE: true, showB: true, showNear: true,
     showDonut: false, showCharges: true, phase: 0, autoFit: true, receiver: null,
-    gridOn: false, gridA: 45, showFieldArrows: false, showGenerator: true
+    gridOn: false, gridA: 45, showFieldArrows: false, showGenerator: true,
+    showScale: true, extRange: [2.4, 3.8]
   };
   const G = grid(V.panel);
   slider(G, { label: 'Frequenz des Senders', min: 60, max: 200, step: 1, value: 100, fmt: v => num(v, 0) + ' MHz', on: v => st.f = v * 1e6 });
@@ -179,7 +180,8 @@ addView('field', '2 · Felder & Abstrahlung', V => {
   RO.add('nf', 'Nahfeld');
   RO.add('axis', 'in Richtung der Dipolachse');
   note(G, '<b>E ⊥ B, in Phase:</b> Im Fernfeld stehen die E- und B-Pfeile an jedem Ort senkrecht aufeinander und erreichen gleichzeitig Maximum und Minimum. ' +
-    'Die Amplituden nehmen mit dem Abstand ab; in Richtung der Dipolachse wird <b>keine</b> Energie abgestrahlt.');
+    'Die Amplituden nehmen mit dem Abstand ab; in Richtung der Dipolachse wird <b>keine</b> Energie abgestrahlt. ' +
+    '<b>Der Dipol ist ein λ/2-Resonator:</b> Bei höherer Frequenz (kleineres λ) muss er kürzer sein – die Länge ändert sich also mit dem Regler mit (Maßstab links unten).');
   note(G, '<b>Speisung:</b> Der Hochfrequenzgenerator speist den Dipol <b>in der Mitte</b> – an der Stelle, an der die beiden Dipolhälften mit kleinem Spalt aneinandergrenzen. ' +
     'Die beiden Hälften sind die „Platten“ des aufgebogenen Kondensators: Die Ladungen sammeln sich an den <b>äußeren Enden</b> (in der Mitte ist die Ladung null, dort ist der Strom maximal).');
   note(G, 'Die Darstellung läuft in <b>Zeitlupe</b>: Die Wellenlänge (Farbe/Muster) ist maßstäblich richtig, die Ausbreitung wäre real ~10⁸-mal schneller. ' +
@@ -190,7 +192,7 @@ addView('field', '2 · Felder & Abstrahlung', V => {
     const lam = info.lam;
     drawLamp(V, st, info.res);
     RO.set('lam', num(lam, 2) + ' m');
-    RO.set('dl', '1,50 m (λ/2 bei 100 MHz)');
+    RO.set('dl', num(lam / 2, 2) + ' m   (λ/2 – folgt der Frequenz)');
     RO.set('nf', 'r < ' + num(lam, 2) + ' m');
     RO.set('axis', 'sin θ = 0 → kein Signal');
     phasePlot(cvPh, st.phase);
@@ -206,6 +208,7 @@ const recvView = addView('recv', '3 · Senden & Empfangen', V => {
   const st = {
     f: F0, slow: .8, cut: 'vertical', showE: true, showB: false, showNear: true,
     showDonut: false, showCharges: true, showFieldArrows: true, phase: 0, autoFit: true, showGenerator: true,
+    showScale: true,
     receiver: { r: 2.0, theta: 90, phi: 35, beta: 0, mode: 'dipol', gamma: 0 },
     gridOn: false, gridA: 45
   };
@@ -242,6 +245,8 @@ const recvView = addView('recv', '3 · Senden & Empfangen', V => {
   bRow.append(bFit); G.append(bRow);
 
   const RO = readouts(G);
+  RO.add('lam', 'Wellenlänge λ');
+  RO.add('dip', 'Sendedipol (λ/2)');
   RO.add('hell', 'Helligkeit des Lämpchens', 'warm');
   RO.add('amp', 'Feldamplitude |E| am Empfänger', 'warm');
   RO.add('geo', 'geometrische Faktoren', 'cool');
@@ -282,6 +287,8 @@ const recvView = addView('recv', '3 · Senden & Empfangen', V => {
     drawLamp(V, st, res);
     if (!res) return;
     const P = res.P;
+    RO.set('lam', num(info.lam, 2) + ' m');
+    RO.set('dip', num(info.lam / 2, 2) + ' m');
     RO.set('hell', pct(P));
     RO.set('amp', num(res.amp, 3) + ' · E₀');
     RO.set('geo', 'sin θ = ' + num(res.sint, 2) + ' · ' +

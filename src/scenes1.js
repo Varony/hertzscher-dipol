@@ -270,7 +270,8 @@ function phaseDiffPlot(cv, k, lam, rNow) {
    Damit ist klar: die beiden Hälften sind die beiden "Platten" des
    aufgebogenen Kondensators, die Ladungen sitzen an den äußeren Enden. */
 const GAP = 0.055;
-function drawGenerator(V) {
+function drawGenerator(V, st) {
+  const h = st.dipHalf || HALF;
   /* kleiner Speiseblock im Spalt zwischen den Dipolhälften */
   const hx = 0.075, hy = 0.085, hz = 0.075;
   const c = 'rgba(190,205,235,.8)';
@@ -281,12 +282,13 @@ function drawGenerator(V) {
     P3(V, top[i], top[(i + 1) % 4], c, 1.4);
     P3(V, bot[i], top[i], c, 1.4);
   }
+  /* Gehäuse des Hochfrequenzgenerators unter dem Dipol */
+  const y1 = -(h + 0.22), y0 = y1 - 0.80;
   /* zwei Zuführungen zum Generatorgehäuse */
-  P3(V, [hx, -hy, 0], [0.085, -0.98, 0], 'rgba(150,170,205,.55)', 1.5);
-  P3(V, [-hx, -hy, 0], [-0.085, -0.98, 0], 'rgba(150,170,205,.55)', 1.5);
+  P3(V, [hx, -hy, 0], [0.085, y1, 0], 'rgba(150,170,205,.55)', 1.5);
+  P3(V, [-hx, -hy, 0], [-0.085, y1, 0], 'rgba(150,170,205,.55)', 1.5);
 
-  /* Gehäuse des Hochfrequenzgenerators unten */
-  const x0 = -0.44, x1 = 0.44, z0 = -0.28, z1 = 0.28, y0 = -1.80, y1 = -1.00;
+  const x0 = -0.44, x1 = 0.44, z0 = -0.28, z1 = 0.28;
   const bc = 'rgba(140,160,200,.5)';
   const bot2 = [[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]];
   const top2 = [[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]];
@@ -298,17 +300,36 @@ function drawGenerator(V) {
   T3(V, [0, y0 - 0.20, 0], 'Hochfrequenzgenerator', 'rgba(185,205,235,.85)', 11);
 }
 
+/* ---------- Maßstabsbalken (absolute Größen ablesbar) ---------- */
+function drawScaleBar(V) {
+  const pxPerM = V._F.fpx / Math.max(0.5, V.cam.dist);
+  let L = 0.2;
+  for (const t of [0.2, 0.5, 1, 2, 5]) { if (t * pxPerM <= V.W * 0.30) L = t; else break; }
+  const w = L * pxPerM, x0 = 16, y0 = V.H - 20;
+  const c = V.ctx;
+  c.save();
+  c.strokeStyle = 'rgba(200,215,245,.8)'; c.lineWidth = 2; c.lineCap = 'butt';
+  c.beginPath();
+  c.moveTo(x0, y0); c.lineTo(x0 + w, y0);
+  c.moveTo(x0, y0 - 5); c.lineTo(x0, y0 + 5);
+  c.moveTo(x0 + w, y0 - 5); c.lineTo(x0 + w, y0 + 5);
+  c.stroke();
+  c.restore();
+  sText(c, x0 + w / 2, y0 - 12, L < 1 ? num(L * 100, 0) + ' cm' : num(L, 0) + ' m', 'rgba(200,215,245,.85)', 11.5);
+}
+
 /* ---------- Sendedipol mit Ladungen und Strom ---------- */
 function drawRod(V, st, t) {
-  [[-HALF, -GAP], [GAP, HALF]].forEach(([a, b]) => {
+  const h = st.dipHalf || HALF;
+  [[-h, -GAP], [GAP, h]].forEach(([a, b]) => {
     P3(V, [0, a, 0], [0, b, 0], 'rgba(120,140,175,.30)', 9);
     P3(V, [0, a, 0], [0, b, 0], '#c9d6ef', 3.4);
   });
   if (!st.showCharges) return;
   const N = 17;
-  const A = V.proj([0, -HALF, 0]), B = V.proj([0, HALF, 0]);
+  const A = V.proj([0, -h, 0]), B = V.proj([0, h, 0]);
   for (let i = 0; i < N; i++) {
-    const s = i / (N - 1), y = -HALF + 2 * HALF * s;
+    const s = i / (N - 1), y = -h + 2 * h * s;
     const q = -Math.cos(Math.PI * s) * Math.cos(t);
     const cur = Math.sin(Math.PI * s) * Math.sin(t);
     const px = lerp(A.x, B.x, s), py = lerp(A.y, B.y, s);
@@ -491,7 +512,11 @@ function renderDipole(V, st, dt) {
   const ctx = V.ctx;
   st.phase += TAU * st.slow * dt;
   const lam = C0 / st.f, k = TAU / lam, t = st.phase;
-  const ext = st.extFixed || Math.max(lam * 1.05, st.receiver ? st.receiver.r * 1.12 : 0, 1.35);
+  const dipHalf = lam / 4;                    // λ/2-Dipol: Länge folgt der Frequenz
+  st.lam = lam; st.dipHalf = dipHalf;
+  let ext = st.extFixed || Math.max(lam * 1.05, st.receiver ? st.receiver.r * 1.12 : 0, 1.35);
+  ext = Math.max(ext, dipHalf * 1.55);
+  if (st.extRange) ext = clamp(ext, st.extRange[0], st.extRange[1]);
   st.extent = ext;
   if (st.autoFit) V.cam.dist = lerp(V.cam.dist, V.needDist(ext), 0.07);
   V.begin();
@@ -509,13 +534,14 @@ function renderDipole(V, st, dt) {
   }
   const res = reception(st, k);
   if (res) drawReceiver(V, st, k, t, res);
-  if (st.showGenerator) drawGenerator(V);
+  if (st.showGenerator) drawGenerator(V, st);
   drawRod(V, st, t);
-  P3(V, [0.10, HALF - 0.10, 0], [0.42, HALF + 0.30, 0], 'rgba(160,180,215,.5)', 1, [3, 4]);
-  T3(V, [0.46, HALF + 0.34, 0], 'Sendedipol', 'rgba(220,230,255,.85)', 12, 0);
+  P3(V, [0.10, dipHalf - 0.10, 0], [0.46, dipHalf + 0.34, 0], 'rgba(160,180,215,.5)', 1, [3, 4]);
+  T3(V, [0.50, dipHalf + 0.38, 0], 'Sendedipol', 'rgba(220,230,255,.85)', 12, 0);
   V.flush();
+  if (st.showScale) drawScaleBar(V);
   st.result = res;
-  return { lam, k, t, res };
+  return { lam, k, t, res, dipHalf };
 }
 
 function drawLamp(V, st, res) {

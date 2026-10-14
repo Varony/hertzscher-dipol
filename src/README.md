@@ -6,23 +6,17 @@ und dem Video *„Hertz'sche Dipolstrahlung als Nachweis elektromagnetischer Str
 
 **Datei:** `index.html` – eine einzige, in sich geschlossene HTML-Datei (kein Internet, keine Bibliotheken, keine Installation nötig).
 
-**Online:** <https://varony.github.io/hertzscher-dipol/> (GitHub Pages, immer die aktuelle Version)
-
 ## Auf dem iPad starten
 
-**Empfohlen – über die Online-Adresse:**
+1. Datei auf das iPad übertragen: AirDrop, iCloud Drive, Dateien-App oder E-Mail-Anhang.
+2. In **Safari** öffnen (in der Dateien-App: Teilen-Symbol → „In Safari öffnen“).
+3. Optional Vollbild: Teilen-Symbol → **„Zum Home-Bildschirm“** → startet ohne Adressleiste wie eine App.
+4. Bedienung: **Ziehen = drehen**, **zwei Finger = zoomen**, Regler mit dem Finger, Gitter in Kapitel 4 direkt drehen.
 
-1. In **Safari** öffnen: <https://varony.github.io/hertzscher-dipol/>
-2. Teilen-Symbol → **„Zum Home-Bildschirm“** → startet ohne Adressleiste im Vollbild wie eine App (Icon ist eingebaut).
+> Tipp: Wenn „In Safari öffnen“ fehlt, die Datei z. B. über einen kleinen lokalen Webserver
+> (`python3 -m http.server` im Ordner) oder einen beliebigen statischen Webspace bereitstellen.
 
-**Ohne Internet – Datei direkt:**
-
-1. `index.html` aufs iPad übertragen (iCloud Drive, LocalSend, Mail-Anhang).
-2. In der **Dateien**-App antippen – die Simulation läuft (WebKit-Vorschau). Für Vollbild stattdessen die Datei über einen kleinen lokalen Webserver (`python3 -m http.server` am Rechner) im Netz bereitstellen und die Adresse in Safari öffnen.
-
-Bedienung: **Ziehen = drehen**, **zwei Finger = zoomen**, Regler mit dem Finger, das Gitter in Kapitel 6 am blauen Drehgriff.
-
-## Die neun Kapitel
+## Die sechs Kapitel
 
 | # | Kapitel | Inhalt |
 |---|---------|--------|
@@ -41,7 +35,9 @@ Bedienung: **Ziehen = drehen**, **zwei Finger = zoomen**, Regler mit dem Finger,
 * **Speisung:** Der Hochfrequenzgenerator speist den Sendedipol **in der Mitte** – die beiden Dipolhälften
   sind die „Platten“ des aufgebogenen Kondensators. Die Ladungen sitzen daher an den **äußeren Enden**
   (Mitte ladungsfrei, dort maximaler Strom) und wechseln periodisch ihr Vorzeichen.
-* Dipollänge fest **1,50 m** (λ/2 bei 100 MHz); die Frequenz ist zwischen 60 und 200 MHz einstellbar.
+* **Dipollänge = λ/2:** Der Sendedipol ist ein λ/2-Resonator, seine Länge folgt also der Frequenz
+  (1,50 m bei 100 MHz, 2,50 m bei 60 MHz, 0,75 m bei 200 MHz). Ein Maßstabsbalken im Bild macht die
+  absoluten Größen ablesbar. Die Frequenz ist zwischen 60 und 200 MHz einstellbar.
 * Feldberechnung mit den Standardformeln des Hertz-Dipols – Nahfeld (1/r³), Induktionsfeld (1/r²) und
   Fernfeld (1/r). **Kontrollgrößen:** Die Phasendifferenz E–B geht von 90° (Nahfeld) auf 0° (Fernfeld),
   E × B zeigt im Fernfeld nach außen (Poynting), und im statischen Grenzfall ergibt sich das Dipolfeld.

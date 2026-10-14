@@ -60,7 +60,7 @@ function fieldChapter(id, title, opts) {
       f: F0, slow: .8, cut: 'vertical', showE: true, showB: opts.showB !== false, showNear: !!opts.showNear,
       showDonut: false, showCharges: true, showFieldArrows: true, showS: !!opts.showS,
       showFronts: !!opts.showFronts, showEqGrid: opts.showEqGrid !== false,
-      phase: 0, autoFit: true, showGenerator: true,
+      phase: 0, autoFit: true, showGenerator: true, showScale: true,
       gridOn: false, gridA: 45, extFixed: opts.extFixed || 0,
       receiver: { r: opts.r0, theta: opts.theta0 || 90, phi: 35, beta: 0, mode: 'probe', gamma: 0 }
     };
@@ -101,6 +101,7 @@ function fieldChapter(id, title, opts) {
 
     const RO = readouts(G);
     RO.add('lam', 'Wellenlänge λ');
+    RO.add('dip', 'Sendedipol (λ/2)');
     RO.add('rl', 'r / λ');
     RO.add('bereich', 'Bereich');
     RO.add('phase', 'Phasendifferenz E–B');
@@ -120,6 +121,7 @@ function fieldChapter(id, title, opts) {
       const sint = Math.sin(st.receiver.theta * D2R);
       const dom = termDominance(r, k);
       RO.set('lam', num(lam, 2) + ' m');
+      RO.set('dip', num(lam / 2, 2) + ' m');
       RO.set('rl', num(rl, 2));
       RO.set('bereich', rl < 1 ? 'Nahfeld (r < λ)' : 'Fernfeld (r > λ)');
       RO.set('phase', num(dphi, 0) + '°' + (dphi > 60 ? ' → nicht in Phase' : dphi < 15 ? ' → in Phase' : ''));
