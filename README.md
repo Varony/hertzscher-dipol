@@ -6,17 +6,23 @@ und dem Video *„Hertz'sche Dipolstrahlung als Nachweis elektromagnetischer Str
 
 **Datei:** `index.html` – eine einzige, in sich geschlossene HTML-Datei (kein Internet, keine Bibliotheken, keine Installation nötig).
 
+**Online:** <https://varony.github.io/hertzscher-dipol/> (GitHub Pages, immer die aktuelle Version)
+
 ## Auf dem iPad starten
 
-1. Datei auf das iPad übertragen: AirDrop, iCloud Drive, Dateien-App oder E-Mail-Anhang.
-2. In **Safari** öffnen (in der Dateien-App: Teilen-Symbol → „In Safari öffnen“).
-3. Optional Vollbild: Teilen-Symbol → **„Zum Home-Bildschirm“** → startet ohne Adressleiste wie eine App.
-4. Bedienung: **Ziehen = drehen**, **zwei Finger = zoomen**, Regler mit dem Finger, Gitter in Kapitel 4 direkt drehen.
+**Empfohlen – über die Online-Adresse:**
 
-> Tipp: Wenn „In Safari öffnen“ fehlt, die Datei z. B. über einen kleinen lokalen Webserver
-> (`python3 -m http.server` im Ordner) oder einen beliebigen statischen Webspace bereitstellen.
+1. In **Safari** öffnen: <https://varony.github.io/hertzscher-dipol/>
+2. Teilen-Symbol → **„Zum Home-Bildschirm“** → startet ohne Adressleiste im Vollbild wie eine App (Icon ist eingebaut).
 
-## Die sechs Kapitel
+**Ohne Internet – Datei direkt:**
+
+1. `index.html` aufs iPad übertragen (iCloud Drive, LocalSend, Mail-Anhang).
+2. In der **Dateien**-App antippen – die Simulation läuft (WebKit-Vorschau). Für Vollbild stattdessen die Datei über einen kleinen lokalen Webserver (`python3 -m http.server` am Rechner) im Netz bereitstellen und die Adresse in Safari öffnen.
+
+Bedienung: **Ziehen = drehen**, **zwei Finger = zoomen**, Regler mit dem Finger, das Gitter in Kapitel 6 am blauen Drehgriff.
+
+## Die neun Kapitel
 
 | # | Kapitel | Inhalt |
 |---|---------|--------|
