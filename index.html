@@ -1574,6 +1574,7 @@ addView('pol', '6 · Polarisation', V => {
     c.restore();
   };
   let handleDown = false;
+  const HIT_R = 48;                      // Trefferradius des Drehgriffs (Touch)
   const handleAlpha = (px, py) => {
     const o = V._handleOrigin;
     if (!o) return st.a;
@@ -1596,7 +1597,7 @@ addView('pol', '6 · Polarisation', V => {
     if (!h) return;
     const r = V.canvas.getBoundingClientRect();
     const x = e.clientX - r.left, y = e.clientY - r.top;
-    if (Math.hypot(x - h.x, y - h.y) < Math.max(44, h.r)) {
+    if (Math.hypot(x - h.x, y - h.y) < HIT_R) {
       handleDown = true; V._handleDrag = true;
       st.a = handleAlpha(x, y); sA.set(st.a);
     }
@@ -1621,8 +1622,8 @@ addView('pol', '6 · Polarisation', V => {
     RO.set('perp', num(sino, 3) + ' · E_S');
     RO.set('par', num(sino * sino, 3) + ' · E_S');
     RO.set('hell', st.mode === 'em' ? pct(lampP) : pct(cosa * cosa));
-    V.setBadges(['α = ' + num(st.a, 0) + '°',
-      st.mode === 'em' ? '|E_E,∥| = |E_S| · sin² α' : 'Amplitude ∝ |cos α|']);
+  V.setBadges(['α = ' + num(st.a, 0) + '°', '|E_E,∥| = |E_S| · sin² α',
+    st.mode === 'em' ? 'Blauen Griff am Gitter ziehen = Gitter drehen' : 'Griff am Spalt ziehen = Spalt drehen']);
 
     /* ---------------- Seilwellen-Analogie (2D) ---------------- */
     if (st.mode === 'rope') {
