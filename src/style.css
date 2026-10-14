@@ -1,0 +1,119 @@
+/* Hertzscher Dipol – interaktive Simulation */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#070a14; --panel:#0e1424; --panel2:#131b2f; --line:#1e2942;
+  --fg:#e9eefb; --dim:#94a3c4; --accent:#4fc3f7; --accent2:#7c5cff;
+  --warm:#ff7043; --cool:#5b8cff; --mag:#40e0d0; --lamp:#ffd54f; --ok:#43d17a; --bad:#ff5a6e;
+}
+html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",Roboto,sans-serif;
+  overscroll-behavior:none;-webkit-text-size-adjust:100%}
+body{position:fixed;inset:0;overflow:hidden}
+button{font-family:inherit}
+#app{display:flex;flex-direction:column;height:100%;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+
+/* ---------- Kopfleiste ---------- */
+header{flex:0 0 auto;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0d1428,#0a0f1d)}
+.brandrow{display:flex;align-items:center;gap:10px;padding:7px 12px 3px}
+.brandrow h1{font-size:15px;margin:0;font-weight:650;letter-spacing:.2px;white-space:nowrap}
+.brandrow .sub{font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spark{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);flex:0 0 auto}
+#tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 10px 8px;scrollbar-width:none}
+#tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:#111a2e;color:var(--dim);
+  font-size:12.5px;padding:7px 12px;border-radius:999px;white-space:nowrap;transition:.15s}
+.tab.on{background:linear-gradient(180deg,#1b4f78,#123254);color:#eaf6ff;border-color:#2f7fb8;
+  box-shadow:0 0 14px rgba(79,195,247,.25)}
+
+/* ---------- Hauptbereich ---------- */
+main{flex:1 1 auto;position:relative;min-height:0}
+.view{position:absolute;inset:0;display:none;flex-direction:column}
+.view.on{display:flex}
+.stage{flex:1 1 auto;position:relative;min-height:0;overflow:hidden}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none}
+.badges{position:absolute;top:8px;left:10px;display:flex;flex-direction:column;gap:4px;pointer-events:none}
+.badge{font-size:11px;color:#cfe3ff;background:rgba(10,16,32,.72);border:1px solid #24314f;
+  border-radius:8px;padding:3px 8px;backdrop-filter:blur(4px)}
+.hint{position:absolute;bottom:8px;left:10px;right:10px;font-size:10.5px;color:#7d8db0;pointer-events:none;text-align:center}
+.iconbtn{position:absolute;top:8px;right:10px;background:rgba(10,16,32,.75);border:1px solid #24314f;color:#cfe3ff;
+  font-size:11.5px;padding:6px 10px;border-radius:8px}
+
+/* ---------- Bedienfeld ---------- */
+.panel{flex:0 0 auto;background:var(--panel);border-top:1px solid var(--line);
+  padding:8px 12px 10px;overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:47vh}
+.panel.full{max-height:none;flex:1 1 auto;border-top:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:6px 16px}
+.ctrl{min-width:0;padding:2px 0}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctrl label{font-size:11.5px;color:var(--dim);letter-spacing:.2px}
+.ctrl output{font-size:12.5px;font-weight:650;color:var(--accent);font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:3px;background:#22304e}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+  background:#eaf7ff;border:2px solid var(--accent);margin-top:-10px;box-shadow:0 1px 5px rgba(0,0,0,.55)}
+input[type=range]::-moz-range-track{height:5px;border-radius:3px;background:#22304e}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border:2px solid var(--accent);background:#eaf7ff;border-radius:50%}
+.seg{display:flex;gap:5px;margin-top:3px;flex-wrap:wrap}
+.seg button{flex:1 1 auto;min-width:58px;border:1px solid var(--line);background:#121b2f;color:var(--dim);
+  font-size:11.5px;padding:8px 6px;border-radius:8px;transition:.15s}
+.seg button.on{background:#17405f;color:#eaf7ff;border-color:#2f7fb8}
+.seg.wide button{min-width:0}
+h2.sec{font-size:11px;text-transform:uppercase;letter-spacing:1.1px;color:#61708f;margin:10px 0 2px;grid-column:1/-1}
+.note{font-size:11.5px;line-height:1.45;color:#a9b8d8;background:#0b1120;border:1px solid var(--line);
+  border-radius:10px;padding:8px 10px;margin-top:8px;grid-column:1/-1}
+.note b{color:#e9eefb}
+.formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#ffd9a8;font-size:12px}
+.readouts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;grid-column:1/-1}
+.ro{background:#0b1120;border:1px solid var(--line);border-radius:9px;padding:5px 9px;font-size:11.5px;color:#c6d4f0}
+.ro b{color:#fff;font-variant-numeric:tabular-nums}
+.ro.warm b{color:var(--warm)} .ro.cool b{color:var(--mag)}
+.plots{display:flex;gap:10px;grid-column:1/-1;margin-top:8px;flex-wrap:wrap}
+.plots canvas{background:#0a1020;border:1px solid var(--line);border-radius:10px;width:150px;height:118px}
+
+/* ---------- Karten (Aufgaben / Formeln) ---------- */
+.cards{display:flex;flex-direction:column;gap:10px;padding:10px 12px 24px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ex{display:grid;grid-template-columns:minmax(0,220px) auto;gap:8px;align-items:center;margin-top:9px;justify-content:start}
+.ex input{width:100%;background:#0b1120;border:1px solid var(--line);color:#eaf2ff;border-radius:9px;
+  padding:10px 11px;font-size:15px;font-family:inherit;font-variant-numeric:tabular-nums}
+.ex input:focus{outline:none;border-color:#2f7fb8}
+.ex .unit{color:var(--dim);font-size:12.5px;white-space:nowrap}
+.exrow{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.exrow button{flex:1 1 auto;border:1px solid #2f7fb8;background:#123254;color:#dff0ff;font-size:12.5px;padding:9px 11px;border-radius:9px}
+.exrow button.ghost{border-color:var(--line);background:#111a2e;color:#c2cfe8}
+.sol{margin-top:8px;font-size:12.5px;line-height:1.55;color:#cfe6ff;background:#0b1120;border:1px solid var(--line);
+  border-radius:10px;padding:9px 11px;display:none}
+.sol.on{display:block}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:11px 13px}
+.card h3{margin:0 0 6px;font-size:13.5px;display:flex;align-items:center;gap:8px}
+.card h3 .n{display:inline-flex;width:20px;height:20px;border-radius:6px;background:#1c2b48;color:#8fd0ff;
+  font-size:11.5px;align-items:center;justify-content:center;flex:0 0 auto}
+.card p{margin:4px 0;font-size:12.5px;line-height:1.5;color:#c2cfe8}
+.card .ans{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.card .ans button{text-align:left;border:1px solid var(--line);background:#111a2e;color:#c2cfe8;font-size:12.5px;
+  padding:9px 11px;border-radius:9px;line-height:1.4}
+.card .ans button.ok{background:#12351f;border-color:#2f7f4a;color:#c6f0d5}
+.card .ans button.bad{background:#3a1520;border-color:#8a3244;color:#ffd3da}
+.fb{margin-top:8px;font-size:12.5px;line-height:1.5;color:#bfe9cf}
+.fb.err{color:#ffc9d2}
+.jump{margin-top:9px;border:1px solid #2f7fb8;background:#123254;color:#dff0ff;font-size:12px;padding:8px 11px;border-radius:9px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:12.5px;margin-top:6px}
+.kv div:nth-child(odd){color:var(--dim)}
+.kv .formula{font-size:12.5px}
+table.cmp{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+table.cmp th,table.cmp td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+table.cmp th{background:#16213a;color:#bcd0f0;font-weight:600}
+
+/* ---------- Querformat ---------- */
+@media (orientation:landscape) and (max-height:900px){
+  .view.on{flex-direction:row}
+  .panel{max-height:none;width:340px;flex:0 0 340px;border-top:none;border-left:1px solid var(--line);
+    padding-bottom:12px}
+  .panel.full{width:auto;flex:1 1 auto}
+  .grid{grid-template-columns:1fr}
+  .badges{top:8px}
+}
+@media (max-width:420px){
+  .brandrow h1{font-size:13.5px}
+  .grid{grid-template-columns:1fr}
+}
