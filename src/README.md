@@ -35,6 +35,12 @@ und dem Video *„Hertz'sche Dipolstrahlung als Nachweis elektromagnetischer Str
 * **Speisung:** Der Hochfrequenzgenerator speist den Sendedipol **in der Mitte** – die beiden Dipolhälften
   sind die „Platten“ des aufgebogenen Kondensators. Die Ladungen sitzen daher an den **äußeren Enden**
   (Mitte ladungsfrei, dort maximaler Strom) und wechseln periodisch ihr Vorzeichen.
+* **Frequenz eintippen:** Bei Kapitel 1 („Frequenz f vorgeben“) und bei allen Frequenz-Reglern der
+  Kapitel 2–5 und 9 kann f direkt in das Feld geschrieben werden (z. B. `100`, `100 MHz`, `2,4 GHz`) –
+  der Regler springt auf den passenden Wert.
+* **Kapitel 1 rechnet physikalisch:** L₀ = 100 µH, C₀ = 1 nF → 503 kHz; Aufbiegen senkt C, Abwickeln senkt L
+  (unterschiedlich schnell), Endzustand L = 0,63 µH, C = 4 pF → **100 MHz** (λ = 3 m). Die angezeigte
+  Frequenz wird live aus L und C berechnet: f = 1/(2π√(L·C)) – die Formel ist damit am Bildschirm nachvollziehbar.
 * **Dipollänge = λ/2:** Der Sendedipol ist ein λ/2-Resonator, seine Länge folgt also der Frequenz
   (1,50 m bei 100 MHz, 2,50 m bei 60 MHz, 0,75 m bei 200 MHz). Ein Maßstabsbalken im Bild macht die
   absoluten Größen ablesbar. Die Frequenz ist zwischen 60 und 200 MHz einstellbar.

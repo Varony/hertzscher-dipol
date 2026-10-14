@@ -68,6 +68,7 @@ function fieldChapter(id, title, opts) {
     const H = {};
     slider(G, {
       label: 'Frequenz des Senders', min: 60, max: 200, step: 1, value: 100,
+      entry: { unit: 'MHz', scale: 1e6, dec: 0 },
       fmt: v => num(v, 0) + ' MHz', on: v => st.f = v * 1e6
     });
     H.r = slider(G, {

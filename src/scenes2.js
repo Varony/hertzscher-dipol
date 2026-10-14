@@ -16,10 +16,29 @@ function lcPath(g, s) {
 
 addView('lc', '1 · Schwingkreis → Dipol', V => {
   const st = { g: 0, gt: 0, ph: 0 };
+  /* ---- Modell: Schwingkreis  L₀ = 100 µH, C₀ = 1 nF  →  f₀ = 503 kHz
+     Aufbiegen (Platten) senkt C, Abwickeln (Windungen) senkt L;
+     Endzustand  L = 0,633 µH, C = 4 pF  →  f = 1/(2π√(L·C)) = 100 MHz (λ = 3 m) ---- */
+  const Lstart = 100e-6, Cstart = 1e-9, Lend = 0.633e-6, Cend = 4e-12;
+  const ss = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+  const sC = g => clamp(0.58 * ss(0, 0.42, g) + 0.42 * ss(0.62, 1, g), 0, 1);
+  const sL = g => clamp(0.10 * ss(0, 0.34, g) + 0.84 * ss(0.30, 0.78, g) + 0.06 * ss(0.72, 1, g), 0, 1);
+  const Cof = g => Cstart * Math.pow(Cend / Cstart, sC(g));
+  const Lof = g => Lstart * Math.pow(Lend / Lstart, sL(g));
+  const fOf = g => 1 / (TAU * Math.sqrt(Lof(g) * Cof(g)));
+  const posOfF = f => {
+    let lo = 0, hi = 1;
+    for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (fOf(m) < f) lo = m; else hi = m; }
+    return (lo + hi) / 2;
+  };
+  const fc = (x, u) => x >= 1e6 ? num(x / 1e6, 2) + ' MHz' : x >= 1e3 ? num(x / 1e3, 1) + ' kHz' : num(x, 0) + ' Hz';
   const G = grid(V.panel);
   const sG = slider(G, {
-    label: 'Aufbiegen → Abwickeln → Verkleinern', min: 0, max: 1, step: 0.005, value: 0,
-    fmt: v => num(v * 100, 0) + ' %',
+    label: 'Frequenz f vorgeben', min: 0, max: 1, step: 0.005, value: 0,
+    entry: {
+      toPhys: g => fOf(g), toPos: f => posOfF(f),
+      display: g => fc(fOf(g)), parse: parseHz
+    },
     on: v => { st.gt = v; }
   });
   seg(G, {
@@ -38,9 +57,11 @@ addView('lc', '1 · Schwingkreis → Dipol', V => {
   RO.add('lam', 'Wellenlänge λ');
   RO.add('l', 'Induktivität L');
   RO.add('c', 'Kapazität C');
-  RO.add('r', 'λ : Dipollänge');
-  note(G, 'In jedem Schritt steigt die Frequenz: <b>Plattenabstand größer, Fläche kleiner, Windungszahl geringer</b> → L und C sinken stark und f = 1/(2π√(L·C)) steigt. ' +
-    'Erst wenn die Antenne die Größenordnung der Wellenlänge erreicht (λ ≈ Meter), wird merklich Leistung abgestrahlt – ein kompakter Schwingkreis strahlt praktisch nichts ab.');
+  RO.add('r', 'λ : Antennenlänge (1,5 m)');
+  note(G, 'In jedem Schritt steigt die Frequenz: <b>Plattenabstand größer, Fläche kleiner, Windungszahl geringer</b> → L und C sinken, und f = 1/(2π√(L·C)) steigt. ' +
+    'Achte darauf, wie die Werte mitlaufen: C sinkt vor allem beim <b>Aufbiegen</b> (Platten) und beim <b>Verkleinern</b>, L vor allem beim <b>Abwickeln</b> (Windungen). ' +
+    'Die Frequenz kannst du auch direkt in das Feld eintippen – der Schwingkreis stellt sich dann passend ein (z. B. <b>100 MHz</b>).');
+  note(G, 'Erst wenn die Antenne die Größenordnung der Wellenlänge erreicht (λ ≈ Meter), wird merklich Leistung abgestrahlt – ein kompakter Schwingkreis strahlt praktisch nichts ab.');
   note(G, '<b>Merke:</b> Der hertzsche Dipol ist ein gerades Drahtstück, das wie ein Schwingkreis mit sehr kleiner Induktivität und sehr kleiner Kapazität wirkt. Ladungen schwingen im Stab hin und her.');
 
   V.draw = dt => {
@@ -121,13 +142,15 @@ addView('lc', '1 · Schwingkreis → Dipol', V => {
       sText(c, X(1.10), Y(-0.02), 'Drahtende 2', 'rgba(150,170,205,' + (0.7 * op) + ')', 10.5, 'left');
     }
 
-    const f = 1e5 * Math.pow(1000, g);
+    const f = fOf(g);
     const lam = C0 / f;
-    RO.set('f', hzStr(f));
+    const Ln = Lof(g), Cn = Cof(g);
+    RO.set('f', fc(f));
     RO.set('lam', lam > 999 ? num(lam / 1000, 2) + ' km' : num(lam, 2) + ' m');
-    RO.set('l', num(Math.pow(1000, -g) * 100, 2) + ' %');
-    RO.set('c', num(Math.pow(1000, -g) * 100, 2) + ' %');
-    RO.set('r', num(lam / 1.5, lam < 10 ? 2 : 0) + ' : 1');
+    RO.set('l', Ln >= 1e-6 ? num(Ln * 1e6, Ln * 1e6 < 10 ? 3 : 1) + ' µH' : num(Ln * 1e9, 0) + ' nH');
+    RO.set('c', Cn >= 1e-9 ? num(Cn * 1e9, 3) + ' nF' : num(Cn * 1e12, Cn * 1e12 < 10 ? 2 : 1) + ' pF');
+    RO.set('r', num(lam / 1.5, lam < 10 ? 1 : 0) + ' : 1');
+    const lcRel = (Math.log10(Ln * Cn) - Math.log10(Lstart * Cstart)) / (Math.log10(Lend * Cend) - Math.log10(Lstart * Cstart));
     const bar = (x, y, w, h, v, col, lab) => {
       if (lab) sText(c, x, y + h / 2, lab, '#8fb6e8', 11, 'left');
       x += 42;
@@ -139,9 +162,9 @@ addView('lc', '1 · Schwingkreis → Dipol', V => {
     sText(c, bx0, 14, 'log-Skala', '#61708f', 10, 'left');
     bar(bx0, 24, bw, 9, g, '#ffb74d', 'f');
     bar(bx0, 46, bw, 9, 1 - g, '#4fc3f7', 'λ');
-    bar(bx0, 68, bw, 9, Math.pow(1000, -g), '#7c5cff', 'C·L');
+    bar(bx0, 68, bw, 9, lcRel, '#7c5cff', 'C·L');
     V.setBadges(['Schwingkreis: Energie pendelt zwischen E-Feld (C) und B-Feld (L)',
-      'Dipol: offener Schwingkreis mit sehr kleiner L und C']);
+      'Regler ziehen = aufbiegen/abwickeln · Frequenz direkt eintippen (z. B. 100 MHz)']);
   };
 });
 
@@ -156,7 +179,11 @@ addView('field', '2 · Felder & Abstrahlung', V => {
     showScale: true, extRange: [2.4, 3.8]
   };
   const G = grid(V.panel);
-  slider(G, { label: 'Frequenz des Senders', min: 60, max: 200, step: 1, value: 100, fmt: v => num(v, 0) + ' MHz', on: v => st.f = v * 1e6 });
+  slider(G, {
+    label: 'Frequenz des Senders', min: 60, max: 200, step: 1, value: 100,
+    entry: { unit: 'MHz', scale: 1e6, dec: 0 },
+    fmt: v => num(v, 0) + ' MHz', on: v => st.f = v * 1e6
+  });
   V.onZoom = () => { st.autoFit = false; };
   slider(G, { label: 'Zeitlupe (Wellen pro Sekunde)', min: .15, max: 2.5, step: .05, value: .85, fmt: v => num(v, 2) + ' Hz', on: v => st.slow = v });
   seg(G, {
@@ -215,7 +242,11 @@ const recvView = addView('recv', '3 · Senden & Empfangen', V => {
   const G = grid(V.panel);
   const H = {};
   V.onZoom = () => { st.autoFit = false; };
-  H.f = slider(G, { label: 'Frequenz des Senders', min: 60, max: 200, step: 1, value: 100, fmt: v => num(v, 0) + ' MHz', on: v => st.f = v * 1e6 });
+  H.f = slider(G, {
+    label: 'Frequenz des Senders', min: 60, max: 200, step: 1, value: 100,
+    entry: { unit: 'MHz', scale: 1e6, dec: 0 },
+    fmt: v => num(v, 0) + ' MHz', on: v => st.f = v * 1e6
+  });
   H.r = slider(G, { label: 'Abstand r', min: .3, max: 6, step: .05, value: 2, fmt: v => num(v, 2) + ' m', on: v => st.receiver.r = v });
   H.theta = slider(G, { label: 'Höhenwinkel θ (0° = Dipolachse)', min: 0, max: 90, step: 1, value: 90, fmt: v => num(v, 0) + '°', on: v => st.receiver.theta = v });
   H.phi = slider(G, { label: 'Richtung φ rund um den Dipol', min: 0, max: 360, step: 1, value: 35, fmt: v => num(v, 0) + '°', on: v => st.receiver.phi = v });
@@ -651,6 +682,12 @@ addView('calc', '9 · Formeln', V => {
   const G = grid(V.panel);
   const sF = slider(G, {
     label: 'Frequenz f (log)', min: 0, max: 100, step: 1, value: 47,
+    entry: {
+      toPhys: v => 30e6 * Math.pow(100, v / 100),
+      toPos: f => 100 * Math.log(f / 30e6) / Math.log(100),
+      display: v => hzStr(30e6 * Math.pow(100, v / 100)),
+      parse: parseHz
+    },
     fmt: v => hzStr(30e6 * Math.pow(100, v / 100)),
     on: v => st.v = v
   });

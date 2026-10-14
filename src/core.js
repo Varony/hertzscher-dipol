@@ -20,6 +20,15 @@ function hzStr(f) {
   return num(f, 0) + ' Hz';
 }
 function pct(x) { return num(clamp(x * 100, 0, 999), x * 100 < 10 ? 1 : 0) + ' %'; }
+/* Frequenzangabe aus Text lesen: "100", "100 MHz", "433mhz", "2,4 GHz" */
+function parseHz(s) {
+  const t = String(s).toLowerCase().replace(',', '.').replace(/\s/g, '');
+  const m = t.match(/(-?[0-9]*\.?[0-9]+)(ghz|mhz|khz|hz)?/);
+  if (!m) return NaN;
+  const v = parseFloat(m[1]);
+  const u = m[2] || 'mhz';
+  return v * (u === 'ghz' ? 1e9 : u === 'mhz' ? 1e6 : u === 'khz' ? 1e3 : 1);
+}
 
 const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
 const $ = s => document.querySelector(s);
@@ -288,16 +297,51 @@ function grid(parent, title) {
 function slider(parent, o) {
   const w = el('div', 'ctrl');
   const top = el('div', 'ctrl-top');
-  const lab = el('label', null, o.label), out = el('output');
-  top.append(lab, out); w.append(top);
+  const lab = el('label', null, o.label);
+  const e = o.entry;
+  let out = null, nInp = null;
+  if (e) {
+    const box = el('span', 'nbox');
+    nInp = el('input');
+    nInp.type = 'text'; nInp.inputMode = 'decimal'; nInp.className = 'nentry';
+    nInp.autocomplete = 'off'; nInp.spellcheck = false;
+    box.append(nInp);
+    if (typeof e.unit === 'string') box.append(el('span', 'nunit', e.unit));
+    top.append(lab, box);
+  } else {
+    out = el('output');
+    top.append(lab, out);
+  }
+  w.append(top);
   const inp = el('input'); inp.type = 'range';
   inp.min = o.min; inp.max = o.max; inp.step = o.step; inp.value = o.value;
   w.append(inp); parent.append(w);
   const fmt = o.fmt || (v => num(v, 2));
-  const sync = () => { out.textContent = fmt(+inp.value); };
+  const toPhys = p => (e && e.toPhys) ? e.toPhys(p) : p * (e ? (e.scale || 1) : 1);
+  const toPos = ph => (e && e.toPos) ? e.toPos(ph) : ph / (e ? (e.scale || 1) : 1);
+  const sync = () => {
+    const p = +inp.value;
+    if (e) {
+      if (document.activeElement !== nInp)
+        nInp.value = e.display ? e.display(p) : num(toPhys(p) / (e.scale || 1), e.dec != null ? e.dec : 2);
+    } else out.textContent = fmt(p);
+  };
+  const commit = () => {
+    let ph;
+    try { ph = e.parse ? e.parse(nInp.value) : parseFloat(String(nInp.value).replace(',', '.')) * (e.scale || 1); }
+    catch (_) { ph = NaN; }
+    if (!isFinite(ph)) { sync(); return; }
+    const p = clamp(toPos(ph), +inp.min, +inp.max);
+    inp.value = p; sync();
+    if (o.on) o.on(p);
+  };
+  if (e) {
+    nInp.addEventListener('change', commit);
+    nInp.addEventListener('keydown', ev => { if (ev.key === 'Enter') { commit(); nInp.blur(); } });
+  }
   inp.addEventListener('input', () => { sync(); o.on && o.on(+inp.value); });
   sync();
-  return { el: w, input: inp, get: () => +inp.value, set(v, fire) { inp.value = v; sync(); if (fire) o.on && o.on(+inp.value); } };
+  return { el: w, input: inp, entry: nInp, get: () => +inp.value, set(v, fire) { inp.value = v; sync(); if (fire) o.on && o.on(+inp.value); } };
 }
 function seg(parent, o) {
   const w = el('div', 'ctrl');

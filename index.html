@@ -69,6 +69,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
   background:#eaf7ff;border:2px solid var(--accent);margin-top:-10px;box-shadow:0 1px 5px rgba(0,0,0,.55)}
 input[type=range]::-moz-range-track{height:5px;border-radius:3px;background:#22304e}
 input[type=range]::-moz-range-thumb{width:22px;height:22px;border:2px solid var(--accent);background:#eaf7ff;border-radius:50%}
+.nbox{display:inline-flex;align-items:baseline;gap:4px;flex:0 0 auto}
+.nentry{width:78px;background:#0b1120;border:1px solid #2a3a5e;color:#eaf2ff;border-radius:7px;
+  padding:4px 7px;font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums;font-family:inherit}
+.nentry:focus{outline:none;border-color:var(--accent);background:#0e1730}
+.nunit{font-size:11.5px;color:var(--dim)}
 .seg{display:flex;gap:5px;margin-top:3px;flex-wrap:wrap}
 .seg button{flex:1 1 auto;min-width:58px;border:1px solid var(--line);background:#121b2f;color:var(--dim);
   font-size:11.5px;padding:8px 6px;border-radius:8px;transition:.15s}
@@ -170,6 +175,15 @@ function hzStr(f) {
   return num(f, 0) + ' Hz';
 }
 function pct(x) { return num(clamp(x * 100, 0, 999), x * 100 < 10 ? 1 : 0) + ' %'; }
+/* Frequenzangabe aus Text lesen: "100", "100 MHz", "433mhz", "2,4 GHz" */
+function parseHz(s) {
+  const t = String(s).toLowerCase().replace(',', '.').replace(/\s/g, '');
+  const m = t.match(/(-?[0-9]*\.?[0-9]+)(ghz|mhz|khz|hz)?/);
+  if (!m) return NaN;
+  const v = parseFloat(m[1]);
+  const u = m[2] || 'mhz';
+  return v * (u === 'ghz' ? 1e9 : u === 'mhz' ? 1e6 : u === 'khz' ? 1e3 : 1);
+}
 
 const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
 const $ = s => document.querySelector(s);
@@ -438,16 +452,51 @@ function grid(parent, title) {
 function slider(parent, o) {
   const w = el('div', 'ctrl');
   const top = el('div', 'ctrl-top');
-  const lab = el('label', null, o.label), out = el('output');
-  top.append(lab, out); w.append(top);
+  const lab = el('label', null, o.label);
+  const e = o.entry;
+  let out = null, nInp = null;
+  if (e) {
+    const box = el('span', 'nbox');
+    nInp = el('input');
+    nInp.type = 'text'; nInp.inputMode = 'decimal'; nInp.className = 'nentry';
+    nInp.autocomplete = 'off'; nInp.spellcheck = false;
+    box.append(nInp);
+    if (typeof e.unit === 'string') box.append(el('span', 'nunit', e.unit));
+    top.append(lab, box);
+  } else {
+    out = el('output');
+    top.append(lab, out);
+  }
+  w.append(top);
   const inp = el('input'); inp.type = 'range';
   inp.min = o.min; inp.max = o.max; inp.step = o.step; inp.value = o.value;
   w.append(inp); parent.append(w);
   const fmt = o.fmt || (v => num(v, 2));
-  const sync = () => { out.textContent = fmt(+inp.value); };
+  const toPhys = p => (e && e.toPhys) ? e.toPhys(p) : p * (e ? (e.scale || 1) : 1);
+  const toPos = ph => (e && e.toPos) ? e.toPos(ph) : ph / (e ? (e.scale || 1) : 1);
+  const sync = () => {
+    const p = +inp.value;
+    if (e) {
+      if (document.activeElement !== nInp)
+        nInp.value = e.display ? e.display(p) : num(toPhys(p) / (e.scale || 1), e.dec != null ? e.dec : 2);
+    } else out.textContent = fmt(p);
+  };
+  const commit = () => {
+    let ph;
+    try { ph = e.parse ? e.parse(nInp.value) : parseFloat(String(nInp.value).replace(',', '.')) * (e.scale || 1); }
+    catch (_) { ph = NaN; }
+    if (!isFinite(ph)) { sync(); return; }
+    const p = clamp(toPos(ph), +inp.min, +inp.max);
+    inp.value = p; sync();
+    if (o.on) o.on(p);
+  };
+  if (e) {
+    nInp.addEventListener('change', commit);
+    nInp.addEventListener('keydown', ev => { if (ev.key === 'Enter') { commit(); nInp.blur(); } });
+  }
   inp.addEventListener('input', () => { sync(); o.on && o.on(+inp.value); });
   sync();
-  return { el: w, input: inp, get: () => +inp.value, set(v, fire) { inp.value = v; sync(); if (fire) o.on && o.on(+inp.value); } };
+  return { el: w, input: inp, entry: nInp, get: () => +inp.value, set(v, fire) { inp.value = v; sync(); if (fire) o.on && o.on(+inp.value); } };
 }
 function seg(parent, o) {
   const w = el('div', 'ctrl');
@@ -1157,10 +1206,29 @@ function lcPath(g, s) {
 
 addView('lc', '1 · Schwingkreis → Dipol', V => {
   const st = { g: 0, gt: 0, ph: 0 };
+  /* ---- Modell: Schwingkreis  L₀ = 100 µH, C₀ = 1 nF  →  f₀ = 503 kHz
+     Aufbiegen (Platten) senkt C, Abwickeln (Windungen) senkt L;
+     Endzustand  L = 0,633 µH, C = 4 pF  →  f = 1/(2π√(L·C)) = 100 MHz (λ = 3 m) ---- */
+  const Lstart = 100e-6, Cstart = 1e-9, Lend = 0.633e-6, Cend = 4e-12;
+  const ss = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+  const sC = g => clamp(0.58 * ss(0, 0.42, g) + 0.42 * ss(0.62, 1, g), 0, 1);
+  const sL = g => clamp(0.10 * ss(0, 0.34, g) + 0.84 * ss(0.30, 0.78, g) + 0.06 * ss(0.72, 1, g), 0, 1);
+  const Cof = g => Cstart * Math.pow(Cend / Cstart, sC(g));
+  const Lof = g => Lstart * Math.pow(Lend / Lstart, sL(g));
+  const fOf = g => 1 / (TAU * Math.sqrt(Lof(g) * Cof(g)));
+  const posOfF = f => {
+    let lo = 0, hi = 1;
+    for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (fOf(m) < f) lo = m; else hi = m; }
+    return (lo + hi) / 2;
+  };
+  const fc = (x, u) => x >= 1e6 ? num(x / 1e6, 2) + ' MHz' : x >= 1e3 ? num(x / 1e3, 1) + ' kHz' : num(x, 0) + ' Hz';
   const G = grid(V.panel);
   const sG = slider(G, {
-    label: 'Aufbiegen → Abwickeln → Verkleinern', min: 0, max: 1, step: 0.005, value: 0,
-    fmt: v => num(v * 100, 0) + ' %',
+    label: 'Frequenz f vorgeben', min: 0, max: 1, step: 0.005, value: 0,
+    entry: {
+      toPhys: g => fOf(g), toPos: f => posOfF(f),
+      display: g => fc(fOf(g)), parse: parseHz
+    },
     on: v => { st.gt = v; }
   });
   seg(G, {
@@ -1179,9 +1247,11 @@ addView('lc', '1 · Schwingkreis → Dipol', V => {
   RO.add('lam', 'Wellenlänge λ');
   RO.add('l', 'Induktivität L');
   RO.add('c', 'Kapazität C');
-  RO.add('r', 'λ : Dipollänge');
-  note(G, 'In jedem Schritt steigt die Frequenz: <b>Plattenabstand größer, Fläche kleiner, Windungszahl geringer</b> → L und C sinken stark und f = 1/(2π√(L·C)) steigt. ' +
-    'Erst wenn die Antenne die Größenordnung der Wellenlänge erreicht (λ ≈ Meter), wird merklich Leistung abgestrahlt – ein kompakter Schwingkreis strahlt praktisch nichts ab.');
+  RO.add('r', 'λ : Antennenlänge (1,5 m)');
+  note(G, 'In jedem Schritt steigt die Frequenz: <b>Plattenabstand größer, Fläche kleiner, Windungszahl geringer</b> → L und C sinken, und f = 1/(2π√(L·C)) steigt. ' +
+    'Achte darauf, wie die Werte mitlaufen: C sinkt vor allem beim <b>Aufbiegen</b> (Platten) und beim <b>Verkleinern</b>, L vor allem beim <b>Abwickeln</b> (Windungen). ' +
+    'Die Frequenz kannst du auch direkt in das Feld eintippen – der Schwingkreis stellt sich dann passend ein (z. B. <b>100 MHz</b>).');
+  note(G, 'Erst wenn die Antenne die Größenordnung der Wellenlänge erreicht (λ ≈ Meter), wird merklich Leistung abgestrahlt – ein kompakter Schwingkreis strahlt praktisch nichts ab.');
   note(G, '<b>Merke:</b> Der hertzsche Dipol ist ein gerades Drahtstück, das wie ein Schwingkreis mit sehr kleiner Induktivität und sehr kleiner Kapazität wirkt. Ladungen schwingen im Stab hin und her.');
 
   V.draw = dt => {
@@ -1262,13 +1332,15 @@ addView('lc', '1 · Schwingkreis → Dipol', V => {
       sText(c, X(1.10), Y(-0.02), 'Drahtende 2', 'rgba(150,170,205,' + (0.7 * op) + ')', 10.5, 'left');
     }
 
-    const f = 1e5 * Math.pow(1000, g);
+    const f = fOf(g);
     const lam = C0 / f;
-    RO.set('f', hzStr(f));
+    const Ln = Lof(g), Cn = Cof(g);
+    RO.set('f', fc(f));
     RO.set('lam', lam > 999 ? num(lam / 1000, 2) + ' km' : num(lam, 2) + ' m');
-    RO.set('l', num(Math.pow(1000, -g) * 100, 2) + ' %');
-    RO.set('c', num(Math.pow(1000, -g) * 100, 2) + ' %');
-    RO.set('r', num(lam / 1.5, lam < 10 ? 2 : 0) + ' : 1');
+    RO.set('l', Ln >= 1e-6 ? num(Ln * 1e6, Ln * 1e6 < 10 ? 3 : 1) + ' µH' : num(Ln * 1e9, 0) + ' nH');
+    RO.set('c', Cn >= 1e-9 ? num(Cn * 1e9, 3) + ' nF' : num(Cn * 1e12, Cn * 1e12 < 10 ? 2 : 1) + ' pF');
+    RO.set('r', num(lam / 1.5, lam < 10 ? 1 : 0) + ' : 1');
+    const lcRel = (Math.log10(Ln * Cn) - Math.log10(Lstart * Cstart)) / (Math.log10(Lend * Cend) - Math.log10(Lstart * Cstart));
     const bar = (x, y, w, h, v, col, lab) => {
       if (lab) sText(c, x, y + h / 2, lab, '#8fb6e8', 11, 'left');
       x += 42;
@@ -1280,9 +1352,9 @@ addView('lc', '1 · Schwingkreis → Dipol', V => {
     sText(c, bx0, 14, 'log-Skala', '#61708f', 10, 'left');
     bar(bx0, 24, bw, 9, g, '#ffb74d', 'f');
     bar(bx0, 46, bw, 9, 1 - g, '#4fc3f7', 'λ');
-    bar(bx0, 68, bw, 9, Math.pow(1000, -g), '#7c5cff', 'C·L');
+    bar(bx0, 68, bw, 9, lcRel, '#7c5cff', 'C·L');
     V.setBadges(['Schwingkreis: Energie pendelt zwischen E-Feld (C) und B-Feld (L)',
-      'Dipol: offener Schwingkreis mit sehr kleiner L und C']);
+      'Regler ziehen = aufbiegen/abwickeln · Frequenz direkt eintippen (z. B. 100 MHz)']);
   };
 });
 
@@ -1297,7 +1369,11 @@ addView('field', '2 · Felder & Abstrahlung', V => {
     showScale: true, extRange: [2.4, 3.8]
   };
   const G = grid(V.panel);
-  slider(G, { label: 'Frequenz des Senders', min: 60, max: 200, step: 1, value: 100, fmt: v => num(v, 0) + ' MHz', on: v => st.f = v * 1e6 });
+  slider(G, {
+    label: 'Frequenz des Senders', min: 60, max: 200, step: 1, value: 100,
+    entry: { unit: 'MHz', scale: 1e6, dec: 0 },
+    fmt: v => num(v, 0) + ' MHz', on: v => st.f = v * 1e6
+  });
   V.onZoom = () => { st.autoFit = false; };
   slider(G, { label: 'Zeitlupe (Wellen pro Sekunde)', min: .15, max: 2.5, step: .05, value: .85, fmt: v => num(v, 2) + ' Hz', on: v => st.slow = v });
   seg(G, {
@@ -1356,7 +1432,11 @@ const recvView = addView('recv', '3 · Senden & Empfangen', V => {
   const G = grid(V.panel);
   const H = {};
   V.onZoom = () => { st.autoFit = false; };
-  H.f = slider(G, { label: 'Frequenz des Senders', min: 60, max: 200, step: 1, value: 100, fmt: v => num(v, 0) + ' MHz', on: v => st.f = v * 1e6 });
+  H.f = slider(G, {
+    label: 'Frequenz des Senders', min: 60, max: 200, step: 1, value: 100,
+    entry: { unit: 'MHz', scale: 1e6, dec: 0 },
+    fmt: v => num(v, 0) + ' MHz', on: v => st.f = v * 1e6
+  });
   H.r = slider(G, { label: 'Abstand r', min: .3, max: 6, step: .05, value: 2, fmt: v => num(v, 2) + ' m', on: v => st.receiver.r = v });
   H.theta = slider(G, { label: 'Höhenwinkel θ (0° = Dipolachse)', min: 0, max: 90, step: 1, value: 90, fmt: v => num(v, 0) + '°', on: v => st.receiver.theta = v });
   H.phi = slider(G, { label: 'Richtung φ rund um den Dipol', min: 0, max: 360, step: 1, value: 35, fmt: v => num(v, 0) + '°', on: v => st.receiver.phi = v });
@@ -1792,6 +1872,12 @@ addView('calc', '9 · Formeln', V => {
   const G = grid(V.panel);
   const sF = slider(G, {
     label: 'Frequenz f (log)', min: 0, max: 100, step: 1, value: 47,
+    entry: {
+      toPhys: v => 30e6 * Math.pow(100, v / 100),
+      toPos: f => 100 * Math.log(f / 30e6) / Math.log(100),
+      display: v => hzStr(30e6 * Math.pow(100, v / 100)),
+      parse: parseHz
+    },
     fmt: v => hzStr(30e6 * Math.pow(100, v / 100)),
     on: v => st.v = v
   });
@@ -1927,6 +2013,7 @@ function fieldChapter(id, title, opts) {
     const H = {};
     slider(G, {
       label: 'Frequenz des Senders', min: 60, max: 200, step: 1, value: 100,
+      entry: { unit: 'MHz', scale: 1e6, dec: 0 },
       fmt: v => num(v, 0) + ' MHz', on: v => st.f = v * 1e6
     });
     H.r = slider(G, {
