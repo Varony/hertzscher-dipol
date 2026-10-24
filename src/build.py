@@ -3,7 +3,7 @@ base = os.path.dirname(os.path.abspath(__file__))
 def rd(n): return io.open(os.path.join(base, n), encoding='utf-8').read()
 html = rd('index.html')
 css = rd('style.css')
-js = '\n'.join(rd(f) for f in ['core.js', 'scenes1.js', 'scenes2.js', 'scenes3.js', 'boot.js'])
+js = '\n'.join(rd(f) for f in ['core.js', 'scenes1.js', 'scenes2.js', 'scenes3.js', 'scenes4.js', 'boot.js'])
 out = html.replace('/*__CSS__*/', css).replace('/*__JS__*/', js)
 icon_path = os.path.join(base, 'icon.dat')
 if os.path.exists(icon_path):

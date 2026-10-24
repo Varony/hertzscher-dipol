@@ -222,6 +222,125 @@ const EX = [
   }
 ];
 
+/* ---------- Zeigeraufgabe: drei Zeiger, Gesamtzeiger, Haupt- oder Nebenmaximum ---------- */
+function phasorTaskCard(cards) {
+  const card = el('div', 'card');
+  const h = el('h3'); h.append(el('span', 'n', '10'), el('span', null, 'Zeigeraddition am Dreifachspalt'));
+  card.append(h);
+  card.append(el('p', null, 'Drei gleich lange Zeiger haben die Phasenwinkel φ₁ = 0°, φ₂ = 180° und φ₃ = 360°. ' +
+    'Konstruiere den Gesamtzeiger, lies seine Amplitude ab und entscheide, ob ein Hauptmaximum oder ein Nebenmaximum vorliegt. ' +
+    'Die Zeigerlänge eines einzelnen Zeigers ist 1. Diese Aufgabe gehört zu Kapitel 12.'));
+  const cv = el('canvas'); cv.className = 'zeiger-task'; card.append(cv);
+  const drawRow = el('div', 'exrow');
+  const bDraw = el('button', 'ghost', 'Kette und Gesamtzeiger konstruieren');
+  drawRow.append(bDraw); card.append(drawRow);
+
+  const ex = el('div', 'ex');
+  const inp = el('input');
+  inp.type = 'text'; inp.inputMode = 'decimal'; inp.autocomplete = 'off'; inp.placeholder = 'Amplitude';
+  ex.append(inp, el('span', 'unit', 'Einheiten eines Zeigers'));
+  card.append(ex);
+
+  const typeRow = el('div', 'seg wide');
+  const bMain = el('button', null, 'Hauptmaximum');
+  const bSide = el('button', null, 'Nebenmaximum');
+  typeRow.append(bMain, bSide); card.append(typeRow);
+  let type = null;
+  bMain.onclick = () => { type = 'main'; bMain.classList.add('on'); bSide.classList.remove('on'); };
+  bSide.onclick = () => { type = 'side'; bSide.classList.add('on'); bMain.classList.remove('on'); };
+
+  const row = el('div', 'exrow');
+  const ok = el('button', null, 'Prüfen');
+  const show = el('button', 'ghost', 'Lösung aufdecken');
+  row.append(ok, show); card.append(row);
+  const fb = el('div', 'fb'); card.append(fb);
+  const sol = el('div', 'sol');
+  sol.innerHTML = '<b>Lösung:</b> Die Zeiger werden Kopf an Fuß gelegt. ' +
+    'z₁ zeigt nach rechts, z₂ nach links, z₃ wieder nach rechts. ' +
+    'Mit den Längen 1 gilt <span class="formula">z₁ + z₂ + z₃ = 1 − 1 + 1 = 1</span>. ' +
+    'Die Amplitude ist also <b>1</b> (in Einheiten eines Zeigers). ' +
+    'Beim Hauptmaximum würden alle drei Zeiger in dieselbe Richtung zeigen; dann wäre die Amplitude 3. ' +
+    'Der Phasenunterschied δ = 180° liegt zwischen den Hauptmaxima bei 0° und 360°, daher ist es ein <b>Nebenmaximum</b>. ' +
+    'Die Intensität ist (1/3)² = 1/9 der Intensität des Hauptmaximums.';
+  card.append(sol);
+
+  let showChain = false;
+  const draw = () => {
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const W = cv.clientWidth || 320, H = cv.clientHeight || 190;
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) {
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    }
+    const c = cv.getContext('2d');
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, W, H);
+    c.fillStyle = '#0a1020'; c.fillRect(0, 0, W, H);
+    const cy = H * 0.52, ox = W * 0.22;
+    const sc = Math.min(W * 0.22, 82);
+    /* Achsen */
+    sLine(c, { x: 16, y: cy }, { x: W - 16, y: cy }, 'rgba(70,90,130,.55)', 1, [4, 5]);
+    sLine(c, { x: ox, y: 16 }, { x: ox, y: H - 16 }, 'rgba(70,90,130,.35)', 1, [4, 5]);
+    if (!showChain) {
+      sArrow(c, { x: ox, y: cy }, { x: ox + sc, y: cy }, 'rgba(255,150,90,.98)', 2.4, 9);
+      sText(c, ox + sc + 8, cy - 10, 'z₁', '#ff9a6a', 11, 'left');
+      sArrow(c, { x: ox, y: cy }, { x: ox - sc, y: cy }, 'rgba(150,170,220,.95)', 2.4, 9);
+      sText(c, ox - sc - 8, cy - 10, 'z₂', 'rgba(170,190,235,.95)', 11, 'right');
+      c.save(); c.setLineDash([6, 4]);
+      sArrow(c, { x: ox, y: cy + 12 }, { x: ox + sc, y: cy + 12 }, 'rgba(255,213,79,.9)', 2, 8);
+      c.restore();
+      sText(c, ox + sc + 8, cy + 14, 'z₃ (liegt auf z₁)', '#ffd54f', 10, 'left');
+      sText(c, 16, 18, 'drei Zeiger vom Ursprung', 'rgba(180,200,235,.9)', 10, 'left');
+    } else {
+      const step = sc, rows = [-26, 0, 26];
+      const cols = ['rgba(255,150,90,.98)', 'rgba(150,170,220,.95)', 'rgba(255,213,79,.95)'];
+      let x = 0;
+      for (let i = 0; i < 3; i++) {
+        const y = cy + rows[i];
+        const x1 = x, x2 = x + (i === 1 ? -step : step);
+        sArrow(c, { x: ox + x1, y }, { x: ox + x2, y }, cols[i], 2.2, 8);
+        sText(c, ox + (x1 + x2) / 2, y - 9, 'z' + (i + 1), cols[i], 10, 'center');
+        if (i < 2) {
+          c.save(); c.setLineDash([3, 4]); c.strokeStyle = 'rgba(150,170,210,.55)'; c.lineWidth = 1;
+          c.beginPath(); c.moveTo(ox + x2, y); c.lineTo(ox + x2, cy + rows[i + 1]); c.stroke(); c.restore();
+        }
+        x = x2;
+      }
+      /* resultierender Zeiger, getrennt unter der Kette */
+      const ry = cy + 58;
+      sArrow(c, { x: ox, y: ry }, { x: ox + step, y: ry }, 'rgba(255,240,160,.98)', 3, 11);
+      sText(c, ox + step / 2, ry + 14, 'A_res = 1', 'rgba(255,240,160,.95)', 10.5, 'center');
+      c.save(); c.setLineDash([3, 4]); c.strokeStyle = 'rgba(150,170,210,.45)'; c.lineWidth = 1;
+      c.beginPath(); c.moveTo(ox + step, cy + rows[2]); c.lineTo(ox + step, ry); c.stroke();
+      c.beginPath(); c.moveTo(ox, cy + rows[2]); c.lineTo(ox, ry); c.stroke(); c.restore();
+      sText(c, 16, 18, 'Kette: Kopf an Fuß (auseinandergezogen)', 'rgba(180,200,235,.9)', 10, 'left');
+    }
+    sText(c, W - 16, H - 14, 'z₁ und z₃ zeigen in dieselbe Richtung', 'rgba(150,175,215,.8)', 9, 'right');
+  };
+  bDraw.onclick = () => { showChain = !showChain; bDraw.textContent = showChain ? 'Zeiger wieder vom Ursprung zeigen' : 'Kette und Gesamtzeiger konstruieren'; draw(); };
+  if (window.ResizeObserver) { const ro = new ResizeObserver(draw); ro.observe(cv); }
+  window.addEventListener('resize', draw);
+  requestAnimationFrame(draw);
+
+  ok.onclick = () => {
+    const raw = inp.value.replace(',', '.').replace(/[^0-9.eE+-]/g, '');
+    const v = parseFloat(raw);
+    if (!isFinite(v)) { fb.className = 'fb err'; fb.textContent = 'Bitte eine Amplitude eingeben.'; return; }
+    if (!type) { fb.className = 'fb err'; fb.textContent = 'Bitte Hauptmaximum oder Nebenmaximum auswählen.'; return; }
+    const aOk = Math.abs(v - 1) <= 0.05;
+    const tOk = type === 'side';
+    if (aOk && tOk) { fb.className = 'fb'; fb.textContent = '✔ Richtig: Amplitude 1, Nebenmaximum.'; }
+    else if (!aOk && tOk) { fb.className = 'fb err'; fb.textContent = '✘ Die Art stimmt, aber die Amplitude noch nicht. Addiere die drei Zeiger Kopf an Fuß.'; }
+    else if (aOk && !tOk) { fb.className = 'fb err'; fb.textContent = '✘ Die Amplitude stimmt, aber die drei Zeiger zeigen nicht alle in dieselbe Richtung. Vergleiche mit dem Hauptmaximum.'; }
+    else { fb.className = 'fb err'; fb.textContent = '✘ Noch nicht richtig. Tipp: z₂ zeigt genau entgegen z₁ und z₃.'; }
+  };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') ok.click(); });
+  show.onclick = () => {
+    sol.classList.toggle('on');
+    show.textContent = sol.classList.contains('on') ? 'Lösung verbergen' : 'Lösung aufdecken';
+  };
+  cards.append(card);
+}
+
 addView('ex', '8 · Rechenaufgaben', V => {
   V.stage.remove();
   V.panel.classList.add('full');
@@ -261,4 +380,5 @@ addView('ex', '8 · Rechenaufgaben', V => {
     show.onclick = () => { sol.classList.toggle('on'); show.textContent = sol.classList.contains('on') ? 'Lösungsweg verbergen' : 'Lösungsweg zeigen'; };
     cards.append(card);
   });
+  phasorTaskCard(cards);
 });

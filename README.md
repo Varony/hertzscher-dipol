@@ -15,8 +15,9 @@ Eine Lernsimulation zu **Senden und Empfangen mit dem hertzschen Dipol**, umgese
 Präsentation *„Hertzscher_Dipol_komplett.pptx“* (Kapitel 3.1, Elektromagnetische Wellen) und dem
 Video *„Hertz'sche Dipolstrahlung als Nachweis elektromagnetischer Strahlung“* (Matthias Kohl).
 
-Neun Kapitel führen vom Schwingkreis über Nah- und Fernfeld und Polarisation bis zu Versuch,
-Rechenaufgaben und Formelsammlung. Die Besonderheit: Es gibt **keine Bibliothek, keinen Build beim
+Fünfzehn Kapitel führen vom Schwingkreis über Nah- und Fernfeld und Polarisation bis zu Versuch,
+Rechenaufgaben und Formelsammlung. Dazu kommen Maxwell-Gleichungen, Interferenz am Doppel- und
+Einzelspalt, Zeigerdarstellung, Röntgenstrahlung, Bragg-Reflexion und die Thomson-Gleichung. Die Besonderheit: Es gibt **keine Bibliothek, keinen Build beim
 Nutzer und keine Netzverbindung**. Die komplette Simulation – 3D-Darstellung, Physik, Aufgaben, Icon –
 steckt in `index.html`. Die 3D-Szenen sind mit **Canvas 2D und einer eigenen Projektion** gezeichnet,
 nicht mit WebGL.
@@ -283,7 +284,7 @@ Damit gilt:
   schwer zurücknehmen.
 * **Keine echten Personendaten** in Prompts oder Beispieldateien.
 
-## Die neun Kapitel
+## Die fünfzehn Kapitel
 
 | # | Kapitel | Inhalt |
 |---|---------|--------|
@@ -296,6 +297,12 @@ Damit gilt:
 | 7 | Versuch V1 | Aufgaben a–f mit Vorhersage, Rückmeldung und „In der Simulation zeigen“ |
 | 8 | Rechenaufgaben | 9 Aufgaben mit Werteingabe, Prüfung und aufklappbarem Lösungsweg (λ, f, Abstandsgesetz, Polarisation, Leistungsdichte) |
 | 9 | Formeln | c = λ·f, Wellenlängen-Rechner mit Maßstab, Merksätze und Vergleichstabelle |
+| 10 | Maxwell | Vier Aussagen in Worten und Bildern, Kausalkette E → B → Welle, Dipol und Fernfeld |
+| 11 | Interferenz | Doppelspalt und Einzelspalt, Gangunterschied, Kleinwinkelnaherung, Rechner und sichtbares Schirmmuster |
+| 12 | Zeiger | Zeigeraddition, Hauptmaximum, Nebenmaxima und Nebenminima, Beispiel Dreifachspalt |
+| 13 | Röntgen | Aufbau der Röhre, Bremsstrahlung und charakteristische Strahlung, Grenzwellenlänge, Welle und Teilchen, ALARA |
+| 14 | Bragg | Netzebenen, Glanzwinkel, Gangunterschied 2·d·sin θ, Bragg-Bedingung und Rechner |
+| 15 | Thomson | Schwingendes Elektron als Dipol, Thomson-Gleichung, Grundfrequenz f = c/(2l), beschleunigte Ladungen |
 
 ## Auf dem iPad starten
 
@@ -356,6 +363,7 @@ Damit gilt:
     ├── scenes1.js      Zeichenprimitive und Felddarstellung
     ├── scenes2.js      Kapitel 1–3, 6, 7, 9
     ├── scenes3.js      Kapitel 4, 5, 8
+    ├── scenes4.js      Kapitel 10 bis 15
     ├── build.py        baut index.html
     └── mkicon.py       erzeugt das App-Icon als Data-URI
 ```
