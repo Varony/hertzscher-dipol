@@ -11,6 +11,7 @@ if os.path.exists(icon_path):
 else:
     out = out.replace('<link rel="apple-touch-icon" href="__ICON__">', '').replace('<link rel="icon" href="__ICON__">', '')
 dst = sys.argv[1] if len(sys.argv) > 1 else os.path.join(base, 'out.html')
+os.makedirs(os.path.dirname(os.path.abspath(dst)), exist_ok=True)
 io.open(dst, 'w', encoding='utf-8').write(out)
-io.open('/tmp/opencode/build/bundle.js', 'w', encoding='utf-8').write(js)
+io.open(os.path.join(base, 'bundle.js'), 'w', encoding='utf-8').write(js)
 print('geschrieben:', dst, len(out), 'Bytes')
