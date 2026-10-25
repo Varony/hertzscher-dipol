@@ -1,8 +1,8 @@
-# Hertzscher Dipol – interaktive Simulation
+# Physik 13.1: Elektromagnetische Wellen
 
-**Senden, Empfangen, Nah- und Fernfeld, Polarisation – in einer einzigen HTML-Datei, offline im Browser, für iPad und Desktop.**
+**Klausurvorbereitung mit Lernpfad, 15 interaktiven Kapiteln und einer Probeklausur. Eine HTML-Datei, offline im Browser, für iPad und Desktop.**
 
-[▶ Simulation öffnen](https://varony.github.io/hertzscher-dipol/) · [Voraussetzungen](#voraussetzungen-für-genau-dieses-ergebnis) · [Ohne Terminal](#ohne-terminal-direkt-bei-anthropic-openai-oder-google) · [Tipps & Tricks](#tipps--tricks) · [Tutorial](TUTORIAL.md)
+[▶ Website öffnen](https://schule-theta.vercel.app/) · [Voraussetzungen](#voraussetzungen-für-genau-dieses-ergebnis) · [Ohne Terminal](#ohne-terminal-direkt-bei-anthropic-openai-oder-google) · [Tipps & Tricks](#tipps--tricks) · [Tutorial](TUTORIAL.md)
 
 > **Entstehung in Kürze:** Die Simulation entstand an einem Abend im Oktober 2026 mit dem CLI-Agenten
 > OpenCode – aus einer PowerPoint, einem Video und vielen kleinen Iterationen. Die erste vollständige
@@ -11,18 +11,16 @@
 
 ## Was ist das?
 
-Eine Lernsimulation zu **Senden und Empfangen mit dem hertzschen Dipol**, umgesetzt nach der
-Präsentation *„Hertzscher_Dipol_komplett.pptx“* (Kapitel 3.1, Elektromagnetische Wellen) und dem
-Video *„Hertz'sche Dipolstrahlung als Nachweis elektromagnetischer Strahlung“* (Matthias Kohl).
+Eine interaktive Klausurvorbereitung zu **elektromagnetischen Wellen in Physik 13.1**. Sie folgt dem
+Skript und führt in fünf Modulen vom Schwingkreis über Nah- und Fernfeld, Polarisation und Maxwell
+bis zu Interferenz, Zeigerdarstellung, Röntgenstrahlung und Bragg-Reflexion.
 
-Fünfzehn Kapitel führen vom Schwingkreis über Nah- und Fernfeld und Polarisation bis zu Versuch,
-Rechenaufgaben und Formelsammlung. Dazu kommen Maxwell-Gleichungen, Interferenz am Doppel- und
-Einzelspalt, Zeigerdarstellung, Röntgenstrahlung, Bragg-Reflexion und die Thomson-Gleichung. Die Besonderheit: Es gibt **keine Bibliothek, keinen Build beim
-Nutzer und keine Netzverbindung**. Die komplette Simulation – 3D-Darstellung, Physik, Aufgaben, Icon –
-steckt in `index.html`. Die 3D-Szenen sind mit **Canvas 2D und einer eigenen Projektion** gezeichnet,
-nicht mit WebGL.
+Der **Lernpfad** zeigt Lernziele, Reihenfolge und Fortschritt. Die **Probeklausur** simuliert die
+Prüfung mit 60 Minuten, 40 BE und drei Aufgaben. Die Besonderheit: Es gibt **keine Bibliothek,
+keinen Build beim Nutzer und keine Netzverbindung**. Die komplette Website steckt in `index.html`.
+Die 3D-Szenen sind mit **Canvas 2D und einer eigenen Projektion** gezeichnet, nicht mit WebGL.
 
-**Online:** <https://varony.github.io/hertzscher-dipol/> · **Offline:** `index.html` herunterladen und
+**Online:** [Vercel](https://schule-theta.vercel.app/) · [GitHub Pages](https://varony.github.io/hertzscher-dipol/) · **Offline:** `index.html` herunterladen und
 im Browser öffnen.
 
 ## Voraussetzungen für genau dieses Ergebnis
@@ -284,32 +282,36 @@ Damit gilt:
   schwer zurücknehmen.
 * **Keine echten Personendaten** in Prompts oder Beispieldateien.
 
-## Die fünfzehn Kapitel
+## Lernpfad und Kapitel
 
-| # | Kapitel | Inhalt |
+| # | Ansicht | Inhalt |
 |---|---------|--------|
-| 1 | Schwingkreis → Dipol | Aufbiegen, Abwickeln (Windungen sinken, Draht streckt sich), Verkleinern – L und C sinken, f steigt (Folie 4) |
-| 2 | Felder & Abstrahlung | E- und B-Feld (in Phase, senkrecht), Nahfeld r < λ, Abstrahlkeule, keine Abstrahlung entlang der Achse |
-| 3 | Senden & Empfangen | Empfangsdipol mit Lämpchen: Abstand, Höhenwinkel θ, Richtung φ, Ausrichtung β, Metallgitter α, Induktionsschleife |
-| 4 | Nahfeld | Messpunkt nahe am Dipol: 1/r³-Anteil überwiegt, radialer Feldanteil, E und B bis 90° phasenverschoben, Energiefluss pendelt (grün/rosa) |
-| 5 | Fernfeld | Wellenfronten laufen nach außen, E ⊥ B und **in Phase** (Δφ → 0°), transversales 1/r-Feld, Energiefluss dauerhaft nach außen |
-| 6 | Polarisation (3D) | E-Welle läuft auf das drehbare Gitter zu: Zerlegung E∥ / E⊥, hinter dem Gitter ist das Feld gedreht, \|E_E,∥\| = \|E_S\|·sin²α |
-| 7 | Versuch V1 | Aufgaben a–f mit Vorhersage, Rückmeldung und „In der Simulation zeigen“ |
-| 8 | Rechenaufgaben | 9 Aufgaben mit Werteingabe, Prüfung und aufklappbarem Lösungsweg (λ, f, Abstandsgesetz, Polarisation, Leistungsdichte) |
-| 9 | Formeln | c = λ·f, Wellenlängen-Rechner mit Maßstab, Merksätze und Vergleichstabelle |
-| 10 | Maxwell | Vier Aussagen in Worten und Bildern, Kausalkette E → B → Welle, Dipol und Fernfeld |
-| 11 | Interferenz | Doppelspalt und Einzelspalt, Gangunterschied, Kleinwinkelnaherung, Rechner und sichtbares Schirmmuster |
-| 12 | Zeiger | Zeigeraddition, Hauptmaximum, Nebenmaxima und Nebenminima, Beispiel Dreifachspalt |
-| 13 | Röntgen | Aufbau der Röhre, Bremsstrahlung und charakteristische Strahlung, Grenzwellenlänge, Welle und Teilchen, ALARA |
-| 14 | Bragg | Netzebenen, Glanzwinkel, Gangunterschied 2·d·sin θ, Bragg-Bedingung und Rechner |
-| 15 | Thomson | Schwingendes Elektron als Dipol, Thomson-Gleichung, Grundfrequenz f = c/(2l), beschleunigte Ladungen |
+| 0 | Lernpfad | Fünf Module mit Lernzielen, Fortschritt und direkten Links zu allen Kapiteln |
+| 1 | Schwingkreis → Dipol | Aufbiegen, Abwickeln, Verkleinern; L und C sinken, f steigt; Dipollänge folgt λ/2 |
+| 2 | Felder & Abstrahlung | E- und B-Feld, Fernfeld, Abstrahlkeule, keine Abstrahlung entlang der Dipolachse |
+| 3 | Nahfeld | 1/r³-Anteil, radialer Feldanteil, Phasenverschiebung, pendelnder Energiefluss |
+| 4 | Fernfeld | Wellenfronten, transversales 1/r-Feld, E und B in Phase, Poynting nach außen |
+| 5 | Polarisation | Drehbares Gitter, Zerlegung E∥ / E⊥, \|E_E,∥\| = \|E_S\|·sin²α |
+| 6 | Maxwell | Vier Aussagen in Worten und Bildern, Kausalkette E → B → Welle, Dipol und Fernfeld |
+| 7 | Thomson | Schwingendes Elektron als Dipol, Thomson-Gleichung, Grundfrequenz f = c/(2l) |
+| 8 | Senden & Empfangen | Abstand, Höhenwinkel θ, Richtung φ, Ausrichtung β, Gitter α, Induktionsschleife |
+| 9 | Versuch V1 | Aufgaben a bis f mit Vorhersage, Rückmeldung und „In der Simulation zeigen“ |
+| 10 | Interferenz | Doppelspalt und Einzelspalt, Gangunterschied, Kleinwinkelnaherung, Schirmmuster |
+| 11 | Zeiger & Gitter | Zeigeraddition, Hauptmaximum, Nebenmaxima, Nebenminima, Dreifachspalt |
+| 12 | Röntgen | Röhre, Bremsstrahlung und charakteristische Strahlung, λmin, Welle und Teilchen, ALARA |
+| 13 | Bragg | Netzebenen, Glanzwinkel, Gangunterschied 2·d·sin θ, Bragg-Bedingung und Rechner |
+| 14 | Formeln | c = λ·f, Wellenlängen-Rechner, Merksätze und Vergleichstabelle |
+| 15 | Rechenaufgaben | Neun Aufgaben mit Werteingabe, Prüfung und aufklappbarem Lösungsweg |
+| 16 | Probeklausur | 60 Minuten, 40 BE, Timer, drei Aufgaben nacheinander, Lösungen erst am Ende |
 
 ## Auf dem iPad starten
 
 **Empfohlen – über die Online-Adresse:**
 
-1. In **Safari** öffnen: <https://varony.github.io/hertzscher-dipol/>
+1. In **Safari** öffnen: <https://schule-theta.vercel.app/>
 2. Teilen-Symbol → **„Zum Home-Bildschirm“** → startet ohne Adressleiste im Vollbild wie eine App (Icon ist eingebaut).
+
+Alternativ: <https://varony.github.io/hertzscher-dipol/>
 
 **Ohne Internet – Datei direkt:**
 
@@ -325,9 +327,9 @@ Damit gilt:
 * **Speisung:** Der Hochfrequenzgenerator speist den Sendedipol **in der Mitte** – die beiden Dipolhälften
   sind die „Platten“ des aufgebogenen Kondensators. Die Ladungen sitzen daher an den **äußeren Enden**
   (Mitte ladungsfrei, dort maximaler Strom) und wechseln periodisch ihr Vorzeichen.
-* **Frequenz eintippen:** Bei Kapitel 1 („Frequenz f vorgeben“) und bei allen Frequenz-Reglern der
-  Kapitel 2–5 und 9 kann f direkt in das Feld geschrieben werden (z. B. `100`, `100 MHz`, `2,4 GHz`) –
-  der Regler springt auf den passenden Wert.
+* **Frequenz eintippen:** Bei Kapitel 1 („Frequenz f vorgeben“) und bei den Frequenz-Reglern der
+  Kapitel 2, 3, 4, 8 und 14 kann f direkt in das Feld geschrieben werden (z. B. `100`, `100 MHz`, `2,4 GHz`).
+  Der Regler springt auf den passenden Wert.
 * **Kapitel 1 rechnet physikalisch:** L₀ = 100 µH, C₀ = 1 nF → 503 kHz; Aufbiegen senkt C, Abwickeln senkt L
   (unterschiedlich schnell), Endzustand L = 0,63 µH, C = 4 pF → **100 MHz** (λ = 3 m). Die angezeigte
   Frequenz wird live aus L und C berechnet: f = 1/(2π√(L·C)).
@@ -346,8 +348,9 @@ Damit gilt:
 ## Bedienung
 
 * Ziehen = drehen · zwei Finger = zoomen · „Ansicht einpassen“ setzt zurück (einheitlich in allen 3D-Kapiteln)
-* Kapitel 4: Gitter über den Regler **oder den blauen Drehgriff direkt am Gitter** drehen (Finger aufsetzen und kreisen)
-* Kapitel 7: Nach einer Antwort erscheint **„▶ In der Simulation zeigen“** und stellt die passende Anordnung in Kapitel 3 ein
+* Kapitel 5: Gitter über den Regler **oder den blauen Drehgriff direkt am Gitter** drehen (Finger aufsetzen und kreisen)
+* Kapitel 9: Nach einer Antwort erscheint **„▶ In der Simulation zeigen“** und stellt die passende Anordnung in Kapitel 8 ein
+* Kapitel 0: Lernstand abhaken; Kapitel 16: Klausur mit Timer starten, abgeben und Lösungen vergleichen
 
 ## Projektstruktur und Build
 
@@ -361,14 +364,15 @@ Damit gilt:
     ├── style.css
     ├── core.js         Mathematik, 3D-Projektion, UI, Tab-System
     ├── scenes1.js      Zeichenprimitive und Felddarstellung
-    ├── scenes2.js      Kapitel 1–3, 6, 7, 9
-    ├── scenes3.js      Kapitel 4, 5, 8
-    ├── scenes4.js      Kapitel 10 bis 15
+    ├── scenes2.js      Kapitel 1, 2, 5, 8, 9, 14
+    ├── scenes3.js      Kapitel 3, 4, 15
+    ├── scenes4.js      Kapitel 6, 7, 10 bis 13
+    ├── scenes5.js      Kapitel 0 und 16 (Lernpfad, Probeklausur)
     ├── build.py        baut index.html
     └── mkicon.py       erzeugt das App-Icon als Data-URI
 ```
 
-Die fertige `index.html` ist bewusst eingecheckt, damit GitHub Pages ohne Build-Schritt auskommt.
+Die fertige `index.html` ist bewusst eingecheckt, damit Vercel und GitHub Pages ohne Build-Schritt auskommen.
 Wer aus den Quellen neu bauen will:
 
 ```bash

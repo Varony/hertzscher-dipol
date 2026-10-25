@@ -9,6 +9,10 @@ rund einer Stunde sichtbarer Iterationen.
 
 **Ergebnis:** `index.html` zum Ausliefern, `src/` zum Weiterentwickeln, GitHub Pages als Hosting.
 
+> Dieses Tutorial beschreibt die Entstehung der ersten neun Kapitel. Später kamen der Lernpfad,
+> Interferenz, Zeiger, Röntgen, Bragg, Thomson und die Probeklausur dazu. Die Kapitelnummern im
+> Tutorial entsprechen daher nicht mehr der aktuellen Reihenfolge.
+
 > Dieses Tutorial rekonstruiert den Weg, der zu diesem Projekt geführt hat. Es ist kein starres Rezept:
 > Kapitel, Physik und Gestaltung lassen sich austauschen. Die Beispieldateien und Prompts beziehen sich
 > auf den hertzschen Dipol, die Arbeitsweise gilt aber für jede interaktive Lernseite.

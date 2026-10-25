@@ -137,7 +137,7 @@ function fieldChapter(id, title, opts) {
 }
 
 /* ==================== 4 · Nahfeld ==================== */
-fieldChapter('near', '4 · Nahfeld', {
+fieldChapter('near', '3 · Nahfeld', {
   r0: 0.20, rMin: 0.08, rMax: 2.0, rStep: 0.01, theta0: 90,
   extFixed: 1.05, showNear: false, showS: true, showFronts: false, showB: false, showEqGrid: true,
   notes: [
@@ -151,7 +151,7 @@ fieldChapter('near', '4 · Nahfeld', {
 });
 
 /* ==================== 5 · Fernfeld ==================== */
-fieldChapter('far', '5 · Fernfeld', {
+fieldChapter('far', '4 · Fernfeld', {
   r0: 4.0, rMin: 0.4, rMax: 9, rStep: 0.1, theta0: 90,
   extFixed: 0, showNear: true, showS: true, showFronts: true, showB: true, showEqGrid: false,
   notes: [
@@ -206,7 +206,7 @@ const EX = [
     n: '7', title: 'Gitter halb abdunkeln',
     text: 'Bei welchem Winkel α ist das Empfangsfeld genau halb so groß wie das Maximum?',
     unit: '°', answer: 45, tol: 0.02,
-    sol: 'sin² α = 0,5 → sin α = 0,7071 → <b>α = 45°</b>. (Die Helligkeit ∝ |E|² ist dabei nur 25 % des Maximums – im Kapitel 6 nachprüfen!)'
+    sol: 'sin² α = 0,5 → sin α = 0,7071 → <b>α = 45°</b>. (Die Helligkeit ∝ |E|² ist dabei nur 25 % des Maximums – im Kapitel 5 nachprüfen!)'
   },
   {
     n: '8', title: 'Ab wann ist es Fernfeld?',
@@ -229,7 +229,7 @@ function phasorTaskCard(cards) {
   card.append(h);
   card.append(el('p', null, 'Drei gleich lange Zeiger haben die Phasenwinkel φ₁ = 0°, φ₂ = 180° und φ₃ = 360°. ' +
     'Konstruiere den Gesamtzeiger, lies seine Amplitude ab und entscheide, ob ein Hauptmaximum oder ein Nebenmaximum vorliegt. ' +
-    'Die Zeigerlänge eines einzelnen Zeigers ist 1. Diese Aufgabe gehört zu Kapitel 12.'));
+    'Die Zeigerlänge eines einzelnen Zeigers ist 1. Diese Aufgabe gehört zu Kapitel 11.'));
   const cv = el('canvas'); cv.className = 'zeiger-task'; card.append(cv);
   const drawRow = el('div', 'exrow');
   const bDraw = el('button', 'ghost', 'Kette und Gesamtzeiger konstruieren');
@@ -341,13 +341,13 @@ function phasorTaskCard(cards) {
   cards.append(card);
 }
 
-addView('ex', '8 · Rechenaufgaben', V => {
+addView('ex', '15 · Rechenaufgaben', V => {
   V.stage.remove();
   V.panel.classList.add('full');
   const cards = el('div', 'cards'); V.panel.append(cards);
   const intro = el('div', 'note');
   intro.innerHTML = '<b>Rechenaufgaben.</b> Wert eintragen (Komma oder Punkt) und prüfen – oder den Lösungsweg aufklappen. ' +
-    'Alle Aufgaben lassen sich in den Kapiteln 3, 5 und 6 der Simulation nachprüfen. c = 3,00 · 10⁸ m/s.';
+    'Die Aufgaben lassen sich in den Kapiteln 1 bis 5 und 8 der Simulation nachprüfen. c = 3,00 · 10⁸ m/s.';
   cards.append(intro);
 
   EX.forEach(t => {

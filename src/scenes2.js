@@ -229,7 +229,7 @@ addView('field', '2 · Felder & Abstrahlung', V => {
 });
 
 /* ==================== 3 · Senden & Empfangen ==================== */
-const recvView = addView('recv', '3 · Senden & Empfangen', V => {
+const recvView = addView('recv', '8 · Senden & Empfangen', V => {
   V.cam.yaw = 0.62; V.cam.pitch = 0.24;
   V.homeCam = { yaw: 0.62, pitch: 0.24, dist: 8 };
   const st = {
@@ -346,7 +346,7 @@ const recvView = addView('recv', '3 · Senden & Empfangen', V => {
 });
 
 /* ==================== 4 · Polarisation (3D) ==================== */
-addView('pol', '6 · Polarisation', V => {
+addView('pol', '5 · Polarisation', V => {
   V.cam.yaw = 1.02; V.cam.pitch = 0.26;
   V.homeCam = { yaw: 1.02, pitch: 0.26, dist: 9 };
   const st = { a: 45, mode: 'em', ph: 0, autoFit: true };
@@ -621,7 +621,7 @@ function taskCard(container, o) {
   container.append(card);
 }
 
-addView('test', '7 · Versuch V1', V => {
+addView('test', '9 · Versuch V1', V => {
   V.stage.remove();
   const cards = el('div', 'cards'); V.panel.append(cards);
   V.panel.classList.add('full');
@@ -678,7 +678,7 @@ addView('test', '7 · Versuch V1', V => {
 });
 
 /* ==================== 6 · Formeln & Merksätze ==================== */
-addView('calc', '9 · Formeln', V => {
+addView('calc', '14 · Formeln', V => {
   const st = { v: 47 };
   const G = grid(V.panel);
   const sF = slider(G, {

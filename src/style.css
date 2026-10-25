@@ -111,6 +111,61 @@ table.cmp{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
 table.cmp th,table.cmp td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
 table.cmp th{background:#16213a;color:#bcd0f0;font-weight:600}
 
+.learn-hero{background:linear-gradient(135deg,rgba(23,64,95,.96),rgba(18,27,47,.96));
+  border:1px solid #2f5f8a;border-radius:16px;padding:14px 16px;margin-bottom:2px}
+.learn-kicker{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#8fd0ff;margin-bottom:4px}
+.learn-hero h2{margin:2px 0 6px;font-size:20px;line-height:1.2}
+.learn-hero p{margin:0;font-size:12.5px;line-height:1.55;color:#d3e2f8;max-width:760px}
+.learn-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.learn-pill{font-size:10.5px;color:#cfe3ff;background:#111a2e;border:1px solid #2a3a5e;
+  border-radius:999px;padding:4px 9px;white-space:nowrap}
+.learn-progress{display:flex;flex-direction:column;gap:6px}
+.learn-progress-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;color:#c6d4f0}
+.learn-progress-top span{color:var(--accent);font-weight:650;font-variant-numeric:tabular-nums}
+.learn-bar{height:10px;border-radius:999px;background:#0b1120;border:1px solid #22304e;overflow:hidden}
+.learn-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2f7fb8,#4fc3f7);
+  border-radius:999px;transition:width .25s ease}
+.learn-hint{font-size:10.5px;color:#7d8db0;line-height:1.45}
+.learn-module{padding:12px 13px}
+.learn-module-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.learn-module-head h3{margin:2px 0 0;font-size:15px;line-height:1.25}
+.learn-time{font-size:10.5px;color:#8fb6e8;background:#0b1120;border:1px solid var(--line);
+  border-radius:999px;padding:3px 8px;white-space:nowrap}
+.learn-desc{color:#a9b8d8;font-size:11.5px;margin:5px 0 4px}
+.learn-row{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;align-items:center;
+  border-top:1px solid #1b2740;padding:9px 0}
+.learn-check{width:21px;height:21px;accent-color:var(--accent);margin:0;cursor:pointer}
+.learn-main{min-width:0}
+.learn-title{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:#e9eefb;line-height:1.3}
+.learn-num{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;
+  border-radius:6px;background:#1c2b48;color:#8fd0ff;font-size:10.5px;flex:0 0 auto}
+.learn-goal{font-size:11px;line-height:1.4;color:#94a3c4;margin-top:2px}
+.learn-open{margin-top:0;padding:7px 10px;font-size:11.5px;flex:0 0 auto}
+.learn-actions{display:flex;flex-wrap:wrap;gap:8px;padding:2px 0 8px}
+.learn-actions .jump{flex:1 1 180px;margin-top:0;font-size:12.5px;padding:10px 12px}
+.exam-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.exam-timer{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:36px;font-weight:750;
+  letter-spacing:1px;color:var(--accent);line-height:1.05;font-variant-numeric:tabular-nums}
+.exam-timer.low{color:var(--bad)}
+.exam-nav{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.exam-nav button{border:1px solid var(--line);background:#121b2f;color:var(--dim);font-size:12.5px;
+  padding:8px 14px;border-radius:9px;min-width:44px}
+.exam-nav button.on{background:#17405f;color:#eaf7ff;border-color:#2f7fb8}
+.exam-task-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:4px}
+.exam-task-head h3{margin:2px 0 0;font-size:15px;line-height:1.25}
+.exam-points{font-size:10.5px;color:#ffd9a8;background:#1b2438;border:1px solid #3a4a6a;
+  border-radius:999px;padding:3px 8px;white-space:nowrap}
+.exam-task ol,.exam-task ul{margin:4px 0 8px;padding-left:20px}
+.exam-task li{font-size:12.5px;line-height:1.5;color:#c2cfe8;margin:2px 0}
+.exam-task .cmp td{height:24px}
+.exam-head .exrow button{font-size:12px;padding:8px 10px}
+@media (max-width:520px){
+  .learn-hero h2{font-size:17px}
+  .learn-row{grid-template-columns:24px minmax(0,1fr)}
+  .learn-open{grid-column:2;justify-self:start;margin-top:2px}
+  .exam-timer{font-size:30px}
+}
+
 /* ---------- Querformat ---------- */
 @media (orientation:landscape) and (max-height:900px){
   .view.on{flex-direction:row}

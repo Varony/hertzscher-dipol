@@ -79,7 +79,7 @@ function drawDoubleArrow(c, x1, y1, x2, y2, color, w) {
 }
 
 /* ==================== 10 · Maxwell ==================== */
-addView('maxwell', '10 · Maxwell', V => {
+addView('maxwell', '6 · Maxwell', V => {
   const st = { phase: 0, speed: 0.85, showE: true, showB: true, mode: 'wave' };
   const G = grid(V.panel);
   seg(G, {
@@ -296,7 +296,7 @@ addView('maxwell', '10 · Maxwell', V => {
 });
 
 /* ==================== 11 · Interferenz ==================== */
-addView('interf', '11 · Interferenz', V => {
+addView('interf', '10 · Interferenz', V => {
   const st = { mode: 'double', lam: 532, g: 0.20, b: 0.080, l: 2.40, phase: 0 };
   const G = grid(V.panel);
   const H = {};
@@ -348,6 +348,10 @@ addView('interf', '11 · Interferenz', V => {
     'Für das erste Minimum löschen sich je zwei Elementarwellen aus den beiden Spalthälften aus, weil ihr Gangunterschied λ/2 beträgt. Die hellen Maxima liegen in der Mitte und an den Rändern des Musters; zu den Rändern hin werden sie schnell schwächer.');
   note(G, '<b>Merke:</b> Beim Doppelspalt bestimmt der Spaltmittenabstand g die Lage der Maxima, beim Einzelspalt bestimmt die Spaltbreite b die Lage der Minima. ' +
     'Die endliche Spaltbreite b moduliert auch das Doppelspaltmuster: Sie bildet die Einhüllende.');
+  note(G, '<b>Kohärenz:</b> Interferenzmaxima und -minima sind nur mit kohärenten Wellen stabil, also mit festem Phasenunterschied während der Beobachtungszeit. ' +
+    'Die <b>zeitliche Kohärenz</b> wird durch die Kohärenzzeit τ_c und die Kohärenzlänge <span class="formula">L_c = c·τ_c</span> beschrieben; der Gangunterschied muss kleiner als L_c sein. ' +
+    'Die <b>räumliche Kohärenz</b> verlangt <span class="formula">a_q·sin β < λ</span>, wobei a_q der Abstand der Randpunkte der Quelle und β der Winkel ist, unter dem sie vom Beobachtungspunkt aus erscheinen. ' +
+    'Laserlicht hat eine große Kohärenzlänge, weißes Sonnenlicht nur etwa 1 µm.');
   V.setBadges(['Muster auf dem Schirm', 'Geometrie schematisch']);
 
   const SCREEN_HALF_D = 0.020;   // m
@@ -569,7 +573,7 @@ addView('interf', '11 · Interferenz', V => {
 });
 
 /* ==================== 12 · Zeiger ==================== */
-addView('zeiger', '12 · Zeiger', V => {
+addView('zeiger', '11 · Zeiger & Gitter', V => {
   const st = { N: 3, delta: 60, mode: 'chain' };
   const G = grid(V.panel);
   const sN = slider(G, {
@@ -749,7 +753,7 @@ addView('zeiger', '12 · Zeiger', V => {
 });
 
 /* ==================== 13 · Röntgen ==================== */
-addView('roentgen', '13 · Röntgen', V => {
+addView('roentgen', '12 · Röntgen', V => {
   const st = { U: 60, mode: 'total', phase: 0, speed: 0.8 };
   const G = grid(V.panel);
   const sU = slider(G, {
@@ -951,7 +955,7 @@ addView('roentgen', '13 · Röntgen', V => {
 });
 
 /* ==================== 14 · Bragg ==================== */
-addView('bragg', '14 · Bragg', V => {
+addView('bragg', '13 · Bragg', V => {
   const st = { d: 282, theta: 10.2, lambda: 100 };
   const G = grid(V.panel);
   const sD = slider(G, {
@@ -1108,7 +1112,7 @@ addView('bragg', '14 · Bragg', V => {
 });
 
 /* ==================== 15 · Thomson ==================== */
-addView('thomson', '15 · Thomson', V => {
+addView('thomson', '7 · Thomson', V => {
   const st = { L: 2.0, C: 2.0, mode: 'osc', phase: 0, speed: 0.8 };
   const G = grid(V.panel);
   slider(G, {

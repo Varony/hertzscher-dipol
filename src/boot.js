@@ -15,7 +15,7 @@ views.forEach(v => {
 });
 window.addEventListener('resize', () => views.forEach(v => v.resize()));
 const hStart = location.hash.replace('#', '');
-showView(views.find(v => v.id === hStart) || views[0]);
+showView(views.find(v => v.id === hStart) || views.find(v => v.id === 'start') || views[0]);
 window.addEventListener('hashchange', () => {
   const v = views.find(x => x.id === location.hash.replace('#', ''));
   if (v) showView(v);
